@@ -76,7 +76,7 @@ export const store = new Vuex.Store({
   },
   actions: {
     favoriteProduct({commit, getters}, payload) {
-      // commit('setLoading', true)
+      commit('setLoading', true)
       const user = getters.user
       firebase.database().ref('/users/' + user.id) 
         .child('/favorites/')
@@ -91,7 +91,7 @@ export const store = new Vuex.Store({
         })
     },
     unfavoriteProduct({commit, getters}, payload) {
-      // commit('setLoading', true)
+      commit('setLoading', true)
       const user = getters.user
       if (!user.fbKeys) {
         return
@@ -216,9 +216,35 @@ export const store = new Vuex.Store({
     },
     autoSignIn({commit}, payload) {
       commit('setUser', {
-        id: payload.uid, favoritedProducts: [],
+        id: payload.uid, 
+        favoritedProducts: [],
         fbKeys: {}
       })
+    },
+    fetchUserData({commit, getters}) {
+      commit('setLoading', true)
+      firebase.database().ref('/users/' + getters.user.id + '/favorites/')
+        .once('value')
+        .then(data => {
+          const dataPairs = data.val()
+          let favoritedProducts = []
+          let swappedPairs = {}
+          for (let key in dataPairs) {
+            favoritedProducts.push(dataPairs[key])
+            swappedPairs[dataPairs[key]] = key
+          }
+          const updatedUser = {
+            id: getters.user.id,
+            favoritedProducts: favoritedProducts,
+            fbKeys: swappedPairs
+          }
+          commit('setLoading', false)
+          commit('setUser', updatedUser)
+        })
+        .catch(error => {
+          commit('setLoading', false)
+          console.log(error)
+        })
     },
     logout({commit}) {
       firebase.auth().signOut()
@@ -231,7 +257,7 @@ export const store = new Vuex.Store({
   getters: {
     loadedProducts(state) {
       return state.loadedProducts.sort((productA, productB) => {
-        return productA.date > productB.date
+        return productA.date < productB.date
       })
     },
     loadedProduct(state) {
@@ -244,13 +270,13 @@ export const store = new Vuex.Store({
     featuredProducts(state, getters) {
       return getters.loadedProducts.slice(0,5)
     },
-    getProductsWithFlexProperty(state) {
-      let productsWithFlex = state.loadedProducts;
-      productsWithFlex.forEach((el, i) => {
-        if (i % 3) el.flex = 6
-        else el.flex = 12
+    getProductsWithFlexProperty(state, getters) {
+      let loadedProducts = getters.loadedProducts
+      loadedProducts.forEach((el, i) => {
+        if (i % 3) el['flex'] = 6
+        else el['flex'] = 12
       });
-      return productsWithFlex;
+      return loadedProducts
     },
     user(state) {
       return state.user

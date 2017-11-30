@@ -16,7 +16,7 @@
             h2.info--text(v-for="p in product.categories") {{p}}
             p {{product.description}}
             v-btn(flat dark class="deep-purple darken-2" :href="link.linkUrl" v-for="link in product.links" :key="link.linkTitle") {{link.linkTitle}}
-            v-btn(icon @click="onAgree")
+            v-btn(icon v-if="userIsAuthenticated && !userIsCreator" @click="onAgree")
               v-icon {{ userIsRegistered ? 'favorite' : 'favorite_border' }}
 </template>
 
