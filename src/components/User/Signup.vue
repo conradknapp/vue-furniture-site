@@ -70,7 +70,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
   .custom-loader {
     animation: loader 1s infinite;
     display: flex;

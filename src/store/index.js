@@ -34,6 +34,17 @@ export const store = new Vuex.Store({
     createProduct(state, payload) {
       state.loadedProducts.push(payload)
     },
+    updateProduct(state, payload) {
+      const product = state.loadedProducts.find(product => {
+        return product.id === payload.id
+      })
+      if (payload.title) {
+        product.title = payload.title
+      }
+      if (payload.description) {
+        product.description = payload.description
+      }
+    },
     setUser(state, payload) {
       state.user = payload
     },
@@ -65,7 +76,8 @@ export const store = new Vuex.Store({
               imageUrl: obj[key].imageUrl,
               description: obj[key].description,
               links: obj[key].links,
-              date: obj[key].date
+              date: obj[key].date,
+              creatorId: obj[key].creatorId
             })
           }
           commit('setLoadedProducts', products)
@@ -76,14 +88,15 @@ export const store = new Vuex.Store({
           console.log(error)
         })
     },
-    createProduct({commit}, payload) {
+    createProduct({commit, getters}, payload) {
       const product = {
         title: payload.title,
         categories: payload.categories,
         imageUrl: payload.imageUrl,
         description: payload.description,
         links: payload.links,
-        date: payload.date.toISOString()
+        date: payload.date.toISOString(),
+        creatorId: getters.user.id
       }
       firebase.database().ref('products').push(product)
         .then(data => {
@@ -91,6 +104,25 @@ export const store = new Vuex.Store({
           commit('createProduct', {...product, id: key})
         })
         .catch(error => {
+          console.log(error)
+        })
+    },
+    updateProductData({commit}, payload) {
+      commit('setLoading', true)
+      const updateObj = {}
+      if (payload.title) {
+        updateObj.title = payload.title
+      }
+      if (payload.description) {
+        updateObj.description = payload.description
+      }
+      firebase.database().ref('products').child(payload.id).update(updateObj)
+        .then(() => {
+          commit('setLoading', false)
+          commit('updateProduct', payload)
+        })
+        .catch(error => {
+          commit('setLoading', false)
           console.log(error)
         })
     },
@@ -133,6 +165,13 @@ export const store = new Vuex.Store({
           commit('setError', error)
           console.log(error)
         })
+    },
+    autoSignIn({commit}, payload) {
+      commit('setUser', {id: payload.uid, favoritedProducts: []})
+    },
+    logout({commit}) {
+      firebase.auth().signOut()
+      commit('setUser', null)
     },
     clearError({commit}) {
       commit('clearError')

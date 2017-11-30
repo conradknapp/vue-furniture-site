@@ -8,10 +8,12 @@ import router from './router'
 import {store} from './store'
 import * as firebase from 'firebase'
 import AlertCmp from './components/Shared/Alert.vue'
+import EditProductDetailsDialog from './components/Product/Edit/EditProductDetailsDialog'
 
 Vue.use(Vuetify)
 
 Vue.component('app-alert', AlertCmp)
+Vue.component('app-edit-product-details-dialog', EditProductDetailsDialog)
 
 Vue.config.productionTip = false
 
@@ -28,6 +30,11 @@ new Vue({
       databaseURL: "https://furniture-site-d9a32.firebaseio.com",
       projectId: "furniture-site-d9a32",
       storageBucket: "furniture-site-d9a32.appspot.com"
+    })
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        this.$store.dispatch('autoSignIn', user)
+      }
     })
     this.$store.dispatch('loadProducts')
   }

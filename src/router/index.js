@@ -7,6 +7,7 @@ import Profile from '@/components/User/Profile'
 import Signup from '@/components/User/Signup'
 import Signin from '@/components/User/Signin'
 import Product from '@/components/Product/Product'
+import AuthGuard from './auth-guard'
 
 Vue.use(Router)
 
@@ -25,7 +26,8 @@ export default new Router({
     {
       path: '/product/new',
       name: 'CreateProduct',
-      component: CreateProduct
+      component: CreateProduct,
+      beforeEnter: AuthGuard
     },
     {
       path: '/products/:id',
