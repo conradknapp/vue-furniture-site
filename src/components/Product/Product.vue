@@ -17,7 +17,7 @@
             p {{product.description}}
             v-btn(flat dark class="deep-purple darken-2" :href="link.linkUrl" v-for="link in product.links" :key="link.linkTitle") {{link.linkTitle}}
             v-btn(icon v-if="userIsAuthenticated && !userIsCreator" @click="onAgree")
-              v-icon {{ userIsRegistered ? 'favorite' : 'favorite_border' }}
+              v-icon {{ productIsLiked ? 'favorite' : 'favorite_border' }}
 </template>
 
 <script>
@@ -40,15 +40,20 @@ export default {
       }
       return this.$store.getters.user.id === this.product.creatorId
     },
-    userIsRegistered() {
+    productIsLiked() {
+      if (!this.loading) {
       return this.$store.getters.user.favoritedProducts.findIndex(productId => {
         return this.product.id === productId
-      }) >= 0
+      }) !== -1
+      }
+    },
+    faveProducts() {
+      return this.$store.getters.user.favoritedProducts
     }
   },
   methods: {
     onAgree() {
-      if (this.userIsRegistered) {
+      if (this.productIsLiked) {
         this.$store.dispatch('unfavoriteProduct', this.product.id)
       } else {
         this.$store.dispatch('favoriteProduct', this.product.id)

@@ -23,7 +23,7 @@
         v-btn(flat router to='/profile' v-if="userIsAuthenticated")
           v-badge(color="blue")
             span(slot="badge" v-if="badgeNumber") {{badgeNumber}}
-            v-icon(left) account_circle
+            v-icon(left) account_box
             | Profile
         v-btn(flat v-if="userIsAuthenticated" @click="onLogout")
           v-icon(left) exit_to_app

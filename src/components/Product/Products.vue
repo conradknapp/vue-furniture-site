@@ -14,10 +14,6 @@
             v-spacer
             v-btn(icon @click="onFavorite")
               v-icon favorite
-            v-btn(icon)
-              v-icon bookmark
-            v-btn(icon)
-              v-icon share
 </template>
 
 <script>

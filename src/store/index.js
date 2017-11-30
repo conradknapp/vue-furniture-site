@@ -100,8 +100,8 @@ export const store = new Vuex.Store({
       firebase.database().ref('/users/' + user.id + '/favorites/').child(fbKey)
         .remove()
         .then(() => {
-          commit('setLoading', false)
           commit('unfavoriteProduct', payload)
+          commit('setLoading', false)
         })
         .catch(error => {
           commit('setLoading', false)
