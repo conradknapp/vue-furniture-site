@@ -31,6 +31,19 @@ export const store = new Vuex.Store({
     error: null
   },
   mutations: {
+    favoriteProduct(state, payload) {
+      const id = payload.id
+      if (state.user.favoritedProducts.findIndex(product => product.id === id) >= 0) {
+        return
+      }
+      state.user.favoritedProducts.push(id)
+      state.user.fbKeys[id] = payload.fbKey
+    },
+    unfavoriteProduct(state, payload) {
+      const favoritedProducts = state.user.favoritedProducts
+      favoritedProducts.splice(favoritedProducts.findIndex(product => product.id === payload), 1)
+      Reflect.deleteProperty(state.user.fbKeys, payload)
+    },
     createProduct(state, payload) {
       state.loadedProducts.push(payload)
     },
@@ -62,6 +75,39 @@ export const store = new Vuex.Store({
     }
   },
   actions: {
+    favoriteProduct({commit, getters}, payload) {
+      // commit('setLoading', true)
+      const user = getters.user
+      firebase.database().ref('/users/' + user.id) 
+        .child('/favorites/')
+        .push(payload)
+        .then(data => {
+          commit('setLoading', false)
+          commit('favoriteProduct', {id: payload, fbKey: data.key})
+        })
+        .catch(error => {
+          commit('setLoading', false)
+          console.log(error)
+        })
+    },
+    unfavoriteProduct({commit, getters}, payload) {
+      // commit('setLoading', true)
+      const user = getters.user
+      if (!user.fbKeys) {
+        return
+      }
+      const fbKey = user.fbKeys[payload]
+      firebase.database().ref('/users/' + user.id + '/favorites/').child(fbKey)
+        .remove()
+        .then(() => {
+          commit('setLoading', false)
+          commit('unfavoriteProduct', payload)
+        })
+        .catch(error => {
+          commit('setLoading', false)
+          console.log(error)
+        })
+    },
     loadProducts({commit}) {
       commit('setLoading', true)
       firebase.database().ref('products').once('value')
@@ -135,7 +181,8 @@ export const store = new Vuex.Store({
             commit('setLoading', false)
             const newUser = {
               id: user.uid,
-              favoritedProducts: []
+              favoritedProducts: [],
+              fbKeys: {}
             }
             commit('setUser', newUser)
           }
@@ -155,7 +202,8 @@ export const store = new Vuex.Store({
             commit('setLoading', false)
             const newUser = {
               id: user.uid,
-              favoritedProducts: []
+              favoritedProducts: [],
+              fbKeys: {}
             }
             commit('setUser', newUser)
           }
@@ -167,7 +215,10 @@ export const store = new Vuex.Store({
         })
     },
     autoSignIn({commit}, payload) {
-      commit('setUser', {id: payload.uid, favoritedProducts: []})
+      commit('setUser', {
+        id: payload.uid, favoritedProducts: [],
+        fbKeys: {}
+      })
     },
     logout({commit}) {
       firebase.auth().signOut()

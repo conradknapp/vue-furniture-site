@@ -16,8 +16,8 @@
             h2.info--text(v-for="p in product.categories") {{p}}
             p {{product.description}}
             v-btn(flat dark class="deep-purple darken-2" :href="link.linkUrl" v-for="link in product.links" :key="link.linkTitle") {{link.linkTitle}}
-            v-btn(icon)
-              v-icon favorite
+            v-btn(icon @click="onAgree")
+              v-icon {{ userIsRegistered ? 'favorite' : 'favorite_border' }}
 </template>
 
 <script>
@@ -39,6 +39,20 @@ export default {
         return false
       }
       return this.$store.getters.user.id === this.product.creatorId
+    },
+    userIsRegistered() {
+      return this.$store.getters.user.favoritedProducts.findIndex(productId => {
+        return this.product.id === productId
+      }) >= 0
+    }
+  },
+  methods: {
+    onAgree() {
+      if (this.userIsRegistered) {
+        this.$store.dispatch('unfavoriteProduct', this.product.id)
+      } else {
+        this.$store.dispatch('favoriteProduct', this.product.id)
+      }
     }
   }
 }

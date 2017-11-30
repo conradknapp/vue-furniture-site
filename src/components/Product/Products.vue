@@ -12,7 +12,7 @@
             v-btn(flat :to="'/products/' + product.id") See More
               v-icon arrow_forward
             v-spacer
-            v-btn(icon)
+            v-btn(icon @click="onFavorite")
               v-icon favorite
             v-btn(icon)
               v-icon bookmark
@@ -25,6 +25,11 @@ export default {
   computed: {
     products() {
       return this.$store.getters.getProductsWithFlexProperty
+    }
+  },
+  methods: {
+    onFavorite() {
+      console.log('heart!!!')
     }
   }
  }
