@@ -17,7 +17,7 @@
                     v-text-field(name="password" label="Password" id="password" v-model="password" type="password" required)
                 v-layout(row)
                   v-flex(xs12)
-                    v-btn(type="submit" :disabled='loading' :loading="loading") Sign in
+                    v-btn(type="submit" :disabled='loading' :loading="loading" color="orange") Sign in
                       span(slot="loader").custom-loader
                         v-icon(light) cached
 </template>

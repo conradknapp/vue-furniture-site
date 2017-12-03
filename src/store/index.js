@@ -6,29 +6,14 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
   state: {
-    loadedProducts: [
-    //   { 
-    //     imageUrl: 'https://images.duckduckgo.com/iu/?u=http%3A%2F%2F3.bp.blogspot.com%2F-FaOGwNsXfOk%2FUYAGYZCvsLI%2FAAAAAAAAEsc%2F8obdFZhlXtc%2Fs1600%2FMId_Century_Modern_Sofa_2.JPG&f=1', 
-    //     id: 'qlwejfkqeasflkja', 
-    //     title: 'Mid-Century Couch',
-    //     date: new Date() 
-    //   },
-    //   {
-    //     imageUrl: 'http://2.bp.blogspot.com/-3xtWYg6SzDk/Tge3tFO216I/AAAAAAAAB1M/S5FyyjETl_M/s1600/Brasillia_1.jpg', 
-    //     id: 'alsdjflkasjasldj', 
-    //     title: 'Mid-Century Credenza',
-    //     date: new Date()
-    //   },
-    //   { 
-    //     imageUrl: 'https://images.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn1.pamono.com%2Fp%2Fz%2F1%2F7%2F175353_3ococx4ea2%2Fmid-century-modern-coffee-table-from-pander-5.jpg&f=1', 
-    //     id: 'asldkfjalkdfj',
-    //     title: 'Mid-Century Table',
-    //     date: new Date()
-    // }
-    ],
+    loadedProducts: [],
     user: null,
-    loading: false,
-    error: null
+    loading: null,
+    heartLoading: null,
+    error: null,
+    searchResults: [],
+    productLiked: null,
+    oldestKey: ``
   },
   mutations: {
     favoriteProduct(state, payload) {
@@ -40,8 +25,8 @@ export const store = new Vuex.Store({
       state.user.fbKeys[id] = payload.fbKey
     },
     unfavoriteProduct(state, payload) {
-      const favoritedProducts = state.user.favoritedProducts
-      favoritedProducts.splice(favoritedProducts.findIndex(product => product.id === payload), 1)
+      const faveProducts = state.user.favoritedProducts
+      faveProducts.splice(faveProducts.indexOf(payload), 1)
       Reflect.deleteProperty(state.user.fbKeys, payload)
     },
     createProduct(state, payload) {
@@ -71,19 +56,101 @@ export const store = new Vuex.Store({
       state.error = null
     },
     setLoadedProducts(state, payload) {
-      state.loadedProducts = payload
+      state.loadedProducts.push(...payload)
+    },
+    setSearchResults(state, payload) {
+      state.searchResults = payload
+    },
+    setOldestKey(state, payload) {
+      state.oldestKey = payload
+    },
+    setHeartLoading(state, payload) {
+      state.heartLoading = payload
     }
   },
   actions: {
+    // getDataset({commit}) {
+    //   commit('setLoading', true)
+    //   let oldestKey = ``
+    //   firebase.database().ref('products')
+    //     .orderByKey()
+    //     .limitToLast(3)
+    //     .once('value')
+    //     .then(snapshot => {
+    //       commit('setLoading', false)
+    //       let arrayOfKeys = Object.keys(snapshot.val())
+    //       let results = arrayOfKeys
+    //         .map(key => snapshot.val()[key])
+    //         .reverse()
+    //       commit('setOldestKey', arrayOfKeys[0])
+    //       commit('setLoadedProducts', results)
+    //     }) 
+    //   },
+      infiniteScroll({commit, getters}) {
+        commit('setLoading', true)
+        firebase.database().ref('products')
+          .orderByKey()
+          .endAt(getters.oldestKey)
+          .limitToLast(4)
+          .once('value')
+          .then(data => {
+            const products = []
+            const obj = data.val()
+            for (let key in obj) {
+              products.push({
+                id: key,
+                title: obj[key].title,
+                categories: obj[key].categories,
+                imageUrl: obj[key].imageUrl,
+                description: obj[key].description,
+                links: obj[key].links,
+                date: obj[key].date,
+                creatorId: obj[key].creatorId
+              })
+            }
+            let slice = products.slice(1)
+            let arrayOfKeys = Object.keys(data.val())
+            // let results = arrayOfKeys
+            //   .map(key => snapshot.val()[key])
+            //   .reverse()
+            //   .slice(1)
+            commit('setOldestKey', arrayOfKeys[0])
+            commit('setLoadedProducts', slice)
+            commit('setLoading', false)
+          })
+    },
+    searchProduct({commit}, payload) {
+      firebase.database().ref('products').orderByValue().on('value', snapshot => {
+            let keysArray = snapshot.val()
+            let arr = []
+            for (let key in keysArray) {
+              arr.push({
+                id: key,
+                title: keysArray[key].title,
+                description: keysArray[key].description,
+                imageUrl: keysArray[key].imageUrl
+              })
+            }
+              let results = arr.filter(el => {
+                let regex = new RegExp(payload, 'gi')
+                if (el.title.match(regex) || el.description.match(regex)) {
+                  return el
+                }
+              })
+              console.log(results)
+              commit('setSearchResults', results)
+      })
+    },
     favoriteProduct({commit, getters}, payload) {
-      commit('setLoading', true)
+      commit('setHeartLoading', true)
       const user = getters.user
       firebase.database().ref('/users/' + user.id) 
         .child('/favorites/')
         .push(payload)
         .then(data => {
-          commit('setLoading', false)
           commit('favoriteProduct', {id: payload, fbKey: data.key})
+          setTimeout(() => commit('setHeartLoading', false), 1200)
+          commit('setLoading', false)
         })
         .catch(error => {
           commit('setLoading', false)
@@ -91,26 +158,24 @@ export const store = new Vuex.Store({
         })
     },
     unfavoriteProduct({commit, getters}, payload) {
-      commit('setLoading', true)
       const user = getters.user
-      if (!user.fbKeys) {
-        return
-      }
       const fbKey = user.fbKeys[payload]
       firebase.database().ref('/users/' + user.id + '/favorites/').child(fbKey)
         .remove()
-        .then(() => {
+        .then(data => {
           commit('unfavoriteProduct', payload)
-          commit('setLoading', false)
         })
         .catch(error => {
-          commit('setLoading', false)
           console.log(error)
         })
     },
     loadProducts({commit}) {
       commit('setLoading', true)
-      firebase.database().ref('products').once('value')
+      let oldestKey = ``
+      firebase.database().ref('products')
+        .orderByKey()
+        .limitToLast(5)
+        .once('value')
         .then(data => {
           const products = []
           const obj = data.val()
@@ -126,7 +191,10 @@ export const store = new Vuex.Store({
               creatorId: obj[key].creatorId
             })
           }
+          let arrayOfKeys = Object.keys(data.val())
+          let oldestKey = arrayOfKeys[0]
           commit('setLoadedProducts', products)
+          commit('setOldestKey', oldestKey)
           commit('setLoading', false)
         })
         .catch(error => {
@@ -286,6 +354,15 @@ export const store = new Vuex.Store({
     },
     error(state) {
       return state.error
+    },
+    searchResults(state) {
+      return state.searchResults
+    },
+    oldestKey(state) {
+      return state.oldestKey
+    },
+    heartLoading(state) {
+      return state.heartLoading
     }
   }
 })

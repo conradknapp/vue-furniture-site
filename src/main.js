@@ -9,11 +9,13 @@ import {store} from './store'
 import * as firebase from 'firebase'
 import AlertCmp from './components/Shared/Alert.vue'
 import EditProductDetailsDialog from './components/Product/Edit/EditProductDetailsDialog'
+import HeartFlutter from './components/Shared/Heart.vue'
 
 Vue.use(Vuetify)
 
 Vue.component('app-alert', AlertCmp)
 Vue.component('app-edit-product-details-dialog', EditProductDetailsDialog)
+Vue.component('heart-flutter', HeartFlutter)
 
 Vue.config.productionTip = false
 
