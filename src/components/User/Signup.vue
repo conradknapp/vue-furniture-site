@@ -2,7 +2,7 @@
   v-container
     v-layout(row v-if="error")
       v-flex(xs12 sm6 offset-sm3)
-        app-alert(@dismissed="onDismissed" :text="error.message")
+        app-alert(@dismissed="onDismissed" :text="error.message" :submessage="error.submessage")
     v-layout(row)
       v-flex(xs12 sm6 offset-sm3)
         v-card
@@ -20,7 +20,7 @@
                     v-text-field(name="confirmPassword" label="Confirm Password" id="confirmPassword" v-model="confirmPassword" type="password" :rules="[comparePasswords]" required)
                 v-layout(row)
                   v-flex(xs12)
-                    v-btn(type="submit" :disabled='loading' :loading="loading") Sign Up
+                    v-btn(color="blue" outline type="submit" :disabled='loading' :loading="loading") Sign Up
                       span(slot="loader").custom-loader
                         v-icon(light) cached
 </template>

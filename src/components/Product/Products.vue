@@ -1,8 +1,8 @@
 <template lang="pug">
-  v-container(grey fluid grid-list-md)#top
+  v-container(grey fluid grid-list-md)
     v-layout(row wrap)
       v-flex(d-flex v-bind="{ [`xs${product.flex}`]: true }" v-for="product in products" :key="product.title")
-        v-card.mt-2.ml-1.mb-2.mr-2(hover)
+        v-card.mt-3.ml-1.mb-2.mr-2(hover)
           v-card-media(:src="product.imageUrl" :key="product.id" @click="goToProduct(product.id)" tag="button" height="200px")
             v-container(fill-height fluid)
               v-layout(fill-height)
@@ -46,6 +46,11 @@ export default {
   created() {
       window.addEventListener('scroll', () => {
         this.scrollY = scrollY
+        if (this.scrollY > 150) {
+          this.pageUpButton = true
+        } else {
+          this.pageUpButton = false
+        }
       })
       window.addEventListener('scroll', this.onPageBottom)
   },
@@ -65,14 +70,6 @@ export default {
       }
     }
   }
-  // created() {
-  //   /* create watcher instead of global event listener*/
-  //   window.addEventListener('scroll', () => {
-  //     if (window.scrollY === document.body.scrollHeight - window.innerHeight) {
-  //       this.$store.dispatch('getDataset2')
-  //     }
-  //   })
-  // }
  }
 </script>
 

@@ -69,23 +69,6 @@ export const store = new Vuex.Store({
     }
   },
   actions: {
-    // getDataset({commit}) {
-    //   commit('setLoading', true)
-    //   let oldestKey = ``
-    //   firebase.database().ref('products')
-    //     .orderByKey()
-    //     .limitToLast(3)
-    //     .once('value')
-    //     .then(snapshot => {
-    //       commit('setLoading', false)
-    //       let arrayOfKeys = Object.keys(snapshot.val())
-    //       let results = arrayOfKeys
-    //         .map(key => snapshot.val()[key])
-    //         .reverse()
-    //       commit('setOldestKey', arrayOfKeys[0])
-    //       commit('setLoadedProducts', results)
-    //     }) 
-    //   },
       infiniteScroll({commit, getters}) {
         commit('setLoading', true)
         firebase.database().ref('products')
@@ -320,6 +303,9 @@ export const store = new Vuex.Store({
     },
     clearError({commit}) {
       commit('clearError')
+    },
+    unAuthUserClick({commit}, payload) {
+      commit('setError', payload)
     }
   },
   getters: {

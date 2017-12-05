@@ -3,7 +3,7 @@
     v-layout(row wrap v-if="loading")
       v-flex(xs12).text-xs-center
         v-progress-circular(indeterminate color="purple" :width="7" :size="70" v-if="loading")
-    v-layout(row wrap v-else)
+    v-layout(row wrap v-else).pt-3
       v-flex(xs12)
         v-card(hover)
           v-card-title
@@ -11,7 +11,7 @@
             template(v-if='userIsCreator')
               v-spacer
               app-edit-product-details-dialog(:product="product")
-          v-card-media(@click="dialog = !dialog" :src="product.imageUrl" height="400px")
+          v-card-media(@click="dialog = !dialog" :src="product.imageUrl" height="300px")
           v-dialog(v-model="dialog").hidden-md-and-down
             v-card
               v-card-media(:src="product.imageUrl" height="500px")
@@ -23,6 +23,9 @@
             v-btn(icon v-if="userIsAuthenticated && !userIsCreator" @click="onAgree")
               v-icon(color="red darken-2" v-if="onProductLiked") favorite
               v-icon(color="red darken-2" v-else) favorite_border
+            v-btn(icon v-if="!userIsAuthenticated" @click="onUnAuthFave")
+              v-icon(color="red darken-2") favorite_border
+            heart-flutter(v-if="unAuthFave")#heart-flutter
             heart-flutter(v-if="heartLoading")#heart-flutter
 </template>
 
@@ -31,7 +34,8 @@ export default {
   props: ['id'],
   data() {
     return {
-      dialog: false
+      dialog: false,
+      unAuthFave: false
     }
   }, 
   computed: {
@@ -65,6 +69,11 @@ export default {
       } else {
         this.$store.dispatch('favoriteProduct', this.product.id)
       }
+    },
+    onUnAuthFave() {
+      this.unAuthFave = true
+      setTimeout(() => this.$router.push('/signup'), 750)
+      setTimeout(() => this.$store.dispatch('unAuthUserClick', {message: `Sign up to save all your favorites`, submessage: `(it only takes a second)`}), 1500)
     }
   }
 }
@@ -81,6 +90,6 @@ export default {
   }
 
   h3 {
-    font-weight: 100;
+    font-weight: 400;
   }
 </style>

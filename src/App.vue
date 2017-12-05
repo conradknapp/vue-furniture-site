@@ -15,11 +15,13 @@
       v-toolbar-title 
         router-link(to="/" tag="span" style="cursor: pointer") Furniture Site
       v-spacer(class="hidden-md-and-down")
-      v-text-field(flex color="pink lighten-1" width="300px" prepend-icon="search" placeholder="Search any style" v-model="searchInput" @input="onSearch" single-line hide-details).ml-4.mr-2
+      v-text-field(@blur="searchInput = ''" flex color="pink lighten-1" width="300px" prepend-icon="search" placeholder="Search any style" v-model="searchInput" @input="onSearch" single-line hide-details).ml-4.mr-2
       v-card(dark v-if="onSearchResults")#card
-        v-list(v-for="result in onSearchResults" :key="result.title")
-          v-list-tile(@click="searchInput = ''" :to="'/products/' + result.id")
+        v-list
+          v-list-tile(@click="searchInput = ''" :to="'/products/' + result.id" v-for="result in onSearchResults" :key="result.title")
             v-list-tile-title {{result.title}} | {{result.description.slice(0,50)}}...
+            v-list-tile-action(v-if="userFavorites.includes(result.id)") 
+              v-icon favorite
       v-toolbar-items(class="hidden-sm-and-down")
         v-btn(flat :to="item.link" v-for="item in menuItems" :key="item.title") 
             v-icon(left) {{item.icon}}
@@ -77,8 +79,11 @@
         if (this.searchInput === '') {
           return
         } else {
-          return this.$store.getters.searchResults.slice(0,5) 
+          return this.$store.getters.searchResults.slice(0,5)
         }
+      },
+      userFavorites() {
+        return this.$store.getters.user.favoritedProducts
       }
     },
     methods: {
@@ -97,9 +102,8 @@
     position: absolute;
     overflow: hidden;
     transition: all 0.5s;
-    transform: translate(0px, 200px);
     width: 100%;
     z-index: 5;
-    min-height: 300px;
+    top: 100%;
   }
 </style>
