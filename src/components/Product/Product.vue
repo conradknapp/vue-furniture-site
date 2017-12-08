@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-container
+  v-container.pt-5
     v-layout(row wrap v-if="loading")
       v-flex(xs12).text-xs-center
         v-progress-circular(indeterminate color="purple" :width="7" :size="70" v-if="loading")
@@ -11,15 +11,19 @@
             template(v-if='userIsCreator')
               v-spacer
               app-edit-product-details-dialog(:product="product")
+          //- add tooltip to picture that prompts them to click for a larger image
           v-card-media(@click="dialog = !dialog" :src="product.imageUrl" height="300px")
-          v-dialog(v-model="dialog").hidden-md-and-down
+          v-dialog(v-model="dialog")
             v-card
               v-card-media(:src="product.imageUrl" height="500px")
           v-card-text
-            v-chip.mb-4(color="orange darken-3" text-color="white" v-for="p in product.categories" :key="p") {{p}}
+            v-chip(color="orange darken-3" text-color="white" v-for="p in product.categories" :key="p") {{p}}
               v-icon(right) label
-            h3.mb-4.ml-2 {{product.description}}
+            h3.mb-2.ml-2 {{product.description}}
+          v-card-actions
             v-btn(flat dark round class="deep-purple darken-2" :href="link.linkUrl" v-for="link in product.links" :key="link.linkTitle") {{link.linkTitle}}
+            //- add ability to animate heart no matter where it is located (maybe it already does that), use getClientBounding Rect
+            v-spacer
             v-btn(icon v-if="userIsAuthenticated && !userIsCreator" @click="onAgree")
               v-icon(color="red darken-2" v-if="onProductLiked") favorite
               v-icon(color="red darken-2" v-else) favorite_border
@@ -73,7 +77,7 @@ export default {
     onUnAuthFave() {
       this.unAuthFave = true
       setTimeout(() => this.$router.push('/signup'), 750)
-      setTimeout(() => this.$store.dispatch('unAuthUserClick', {message: `Sign up to save all your favorites`, submessage: `(it only takes a second)`}), 1500)
+      setTimeout(() => this.$store.dispatch('unAuthUserClick', {message: `Sign up to save all your favorites`, submessage: `(it only takes a second)`, icon: 'info', color: "info"}), 1500)
     }
   }
 }

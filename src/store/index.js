@@ -13,7 +13,8 @@ export const store = new Vuex.Store({
     error: null,
     searchResults: [],
     productLiked: null,
-    oldestKey: ``
+    oldestKey: ``,
+    justSignedIn: null
   },
   mutations: {
     favoriteProduct(state, payload) {
@@ -257,6 +258,7 @@ export const store = new Vuex.Store({
               fbKeys: {}
             }
             commit('setUser', newUser)
+            commit('setError', {message: `🎉  You are now signed in  🎉`, icon: 'check_circle', color: 'green'})
           }
         )
         .catch(error => {

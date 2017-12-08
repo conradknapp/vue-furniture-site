@@ -1,23 +1,49 @@
 <template lang="pug">
-  v-container(grey fluid grid-list-md)
+  //- add debounce function
+  v-container(grey lighten-2 fluid grid-list-md).pt-5.mt-5
+    v-layout(row wrap v-if='!loading').hidden-xs-only
+      v-flex(xs12 d-flex)
+        v-btn(dark large).gradient-btn.btn-1
+          v-icon(left) event_seat
+          h3.hidden-sm-and-down Chairs
+        v-btn(dark large).gradient-btn.btn-2
+          v-icon(left) weekend
+          h3.hidden-sm-and-down Sofas
+        v-btn(dark large).gradient-btn.btn-3
+          img(src="../../assets/table.svg")
+          h3.hidden-sm-and-down Tables
+        v-btn(dark large).gradient-btn.btn-4
+          img(src="../../assets/lamp.svg")
+          h3.hidden-sm-and-down Lamps
+        v-btn(dark large).gradient-btn.btn-5
+          img(src="../../assets/bed.svg")
+          h3.hidden-sm-and-down Beds
+        v-btn(dark large).gradient-btn.btn-6
+          img(src="../../assets/dresser.svg")
+          h3.hidden-sm-and-down Dressers
+        v-tooltip(bottom)
+          span Row layout
+          v-btn(icon slot="activator" @click="flex = 12")
+            v-icon(:color="flex === 12 ? 'purple' : ''") view_headline
+        v-tooltip(bottom)
+          span Mozaic layout
+          v-btn(icon slot="activator" @click="flex = null")
+            v-icon(:color="flex === null ? 'purple' : ''") view_quilt
     v-layout(row wrap)
-      v-flex(d-flex v-bind="{ [`xs${product.flex}`]: true }" v-for="product in products" :key="product.title")
+      v-flex(d-flex v-bind="{ [`xs${flex}`]: true }" v-for="product in products" :key="product.title" hover @mouseenter="revealDescription(product)" @mouseleave="description = false")
         v-card.mt-3.ml-1.mb-2.mr-2(hover)
-          v-card-media(:src="product.imageUrl" :key="product.id" @click="goToProduct(product.id)" tag="button" height="200px")
+          v-card-media(:src="product.imageUrl" :key="product.id" @click="goToProduct(product.id)" tag="button" :height="height")
             v-container(fill-height fluid)
               v-layout(fill-height)
                 v-flex(xs12 align-end flexbox)
                   span(v-text="product.title")#span.hidden-xs-only.headline
+                  span(v-if="product.description === description" v-text="description")#description
           v-card-actions
-            v-btn(raised dark color="purple darken-4" :to="'/products/' + product.id") See Info
+            v-btn(dark flat color="purple darken-4" :to="'/products/' + product.id")
               v-icon arrow_forward
             v-spacer
             v-btn(icon)
               v-icon(color="red darken-2") favorite_outline
-            v-btn(icon)
-              v-icon(color="blue darken-3") bookmark_outline
-            v-btn(icon)
-              v-icon(color="purple") share
     v-layout(v-if="pageUpButton")
       v-flex#btn-container
         v-btn(color="grey darken-2" @click="backToTop" absolute dark fixed bottom fab)#btn
@@ -32,10 +58,16 @@ export default {
   data() {
     return {
       scrollY: '',
-      pageUpButton: false
+      pageUpButton: false,
+      flex: 12,
+      description: '',
     }
   },
   computed: {
+    height() {
+      if (this.flex === 12) return '300px'
+      else return '250px'
+    },
     products() {
       return this.$store.getters.loadedProducts
     },
@@ -68,6 +100,10 @@ export default {
       if (window.scrollY === document.body.scrollHeight - window.innerHeight) {
         this.$store.dispatch('infiniteScroll')
       }
+    },
+    revealDescription(product) {
+        if (this.products.find(el => el.id === product.id))
+         this.description = product.description
     }
   }
  }
@@ -90,6 +126,36 @@ export default {
     transition-duration: 0.3s;
   }
 
+   #description {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0,0,0,0.5);
+    color: white;
+    font-family: sans-serif;
+    font-weight: 100;
+    font-size: 16px;
+    padding: 1rem;
+    text-align: center;
+    pointer-events: none;
+    animation: revealDiv 0.2s ease-in;
+  }
+
+  @keyframes revealDiv {
+    0% {
+      opacity: 0;
+    }
+
+    50% {
+      opacity: 0.75;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+
   #btn-container {
     display: flex;
     flex-direction: column;
@@ -101,6 +167,20 @@ export default {
     animation: buttonReveal 0.5s cubic-bezier(.25,.8,.5,1);
   }
 
+  .gradient-btn {
+    margin: -1px;
+    padding: 0;
+    border-radius: 0px;
+  }
+
+  img {
+    padding-right: 10px;
+    padding-bottom: 2px;
+    /* display: flex;
+    flex-direction: column;
+    justify-content: center; */
+  }
+
 @keyframes buttonReveal {
   0% {
     opacity: 0;
@@ -110,5 +190,29 @@ export default {
     opacity: 1;
     transform: scale(1) translate(0px, -30px);
   }
+}
+
+.btn-1 {
+  background-image: linear-gradient(270deg, #0D8691 0%, #209DAB 100%);
+}
+
+.btn-2 {
+  background-image: linear-gradient(270deg, #0D86AB 0%, #0D8691 100%);
+}
+
+.btn-3 {
+  background-image: linear-gradient(270deg, #056582 0%, #0D86AB 100%)
+}
+
+.btn-4 {
+  background-image: linear-gradient(270deg, #05799C 0%, #056582 100%);
+}
+
+.btn-5 {
+  background-image: linear-gradient(270deg, #03536B 0%, #05799C 100%);
+}
+
+.btn-6 {
+  background-image: linear-gradient(270deg, #02384D 0%, #03536B 100%);
 }
 </style>

@@ -1,4 +1,5 @@
 <template lang="pug">
-  div
+  //- put all favorited products here
+  v-container
     p Profile
 </template>

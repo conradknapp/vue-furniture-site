@@ -2,7 +2,7 @@
   v-container
     v-layout(row v-if="error")
       v-flex(xs12 sm6 offset-sm3)
-        app-alert(@dismissed="onDismissed"  :text="error.message")
+        app-alert(@dismissed="onDismissed" :text="error.message" :color="error.color" :icon="error.icon")
     v-layout(row wrap)
       v-flex(xs12 sm6 offset-sm3)
         v-card

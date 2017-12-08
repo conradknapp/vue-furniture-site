@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-app
+  v-app#app
     v-navigation-drawer(temporary overflow absolute v-model="sideNav")
       v-list
         v-list-tile(v-for="item in menuItems" :key="item.title" :to="item.link")
@@ -10,17 +10,17 @@
           v-list-tile-action
             v-icon exit_to_app
           v-list-tile-content Logout
-    v-toolbar(class="deep-purple darken-2" dark)
+    v-toolbar(fixed class="deep-purple darken-2" dark)
       v-toolbar-side-icon(@click.native.stop="sideNav = !sideNav" class="hidden-md-and-up")
       v-toolbar-title 
-        router-link(to="/" tag="span" style="cursor: pointer") Furniture Site
+        router-link(to="/" tag="span" style="cursor: pointer") Mid-Century Modern
       v-spacer(class="hidden-md-and-down")
       v-text-field(@blur="searchInput = ''" flex color="pink lighten-1" width="300px" prepend-icon="search" placeholder="Search any style" v-model="searchInput" @input="onSearch" single-line hide-details).ml-4.mr-2
       v-card(dark v-if="onSearchResults")#card
         v-list
           v-list-tile(@click="searchInput = ''" :to="'/products/' + result.id" v-for="result in onSearchResults" :key="result.title")
             v-list-tile-title {{result.title}} | {{result.description.slice(0,50)}}...
-            v-list-tile-action(v-if="userFavorites.includes(result.id)") 
+            v-list-tile-action(v-if="userIsAuthenticated && userFavorites.includes(result.id)") 
               v-icon favorite
       v-toolbar-items(class="hidden-sm-and-down")
         v-btn(flat :to="item.link" v-for="item in menuItems" :key="item.title") 
@@ -56,6 +56,7 @@
         ]
         if (this.userIsAuthenticated) {
           menuItems = [
+            // { icon: 'home', title: 'Home Page', link: '/' },
             { icon: 'weekend', title: 'View Products', link: '/products' }
           ]
         }
@@ -103,7 +104,15 @@
     overflow: hidden;
     transition: all 0.5s;
     width: 100%;
-    z-index: 5;
+    z-index: 8;
     top: 100%;
   }
+
+  #app {
+    background-color: #99f;
+  }
+
+  /* #app {
+    background-image: linear-gradient(rgba(15, 2, 255, 0.4), rgba(100, 80, 205, 0.05) 80%), linear-gradient(-45deg, rgba(120, 35, 70, 0.8) 25%, rgba(155, 60, 235, 0.9) 75%);
+  } */
 </style>
