@@ -1,5 +1,5 @@
 <template lang="pug">
-  //- add debounce function
+  //- add debounce function to infinite scroll
   v-container(grey lighten-2 fluid grid-list-md).pt-5.mt-5
     v-layout(row wrap v-if='!loading').hidden-xs-only
       v-flex(xs12 d-flex)
@@ -36,14 +36,16 @@
             v-container(fill-height fluid)
               v-layout(fill-height)
                 v-flex(xs12 align-end flexbox)
-                  span(v-text="product.title")#span.hidden-xs-only.headline
+                  span(v-text="product.title")#title.hidden-xs-only.headline
                   span(v-if="product.description === description" v-text="description")#description
-          v-card-actions
-            v-btn(dark flat color="purple darken-4" :to="'/products/' + product.id")
-              v-icon arrow_forward
-            v-spacer
-            v-btn(icon)
-              v-icon(color="red darken-2") favorite_outline
+                  span#favorite
+                    v-icon(color="red darken-4" x-large) favorite_outline
+          //- v-card-actions
+          //-   v-btn(dark flat color="purple darken-4" :to="'/products/' + product.id")
+          //-     v-icon arrow_forward
+          //-   v-spacer
+          //-   v-btn(icon)
+          //-     v-icon(color="red darken-2") favorite_outline
     v-layout(v-if="pageUpButton")
       v-flex#btn-container
         v-btn(color="grey darken-2" @click="backToTop" absolute dark fixed bottom fab)#btn
@@ -110,7 +112,7 @@ export default {
 </script>
 
 <style>
-  #span {
+  #title {
     font-family: sans-serif;
     font-weight: 100;
     padding: 3px 10px;
@@ -121,7 +123,7 @@ export default {
     background: rgba(0,0,0,0.3);
   }
 
-  #span:hover {
+  #title:hover {
     background-color: rgba(74, 20, 140, 0.4);
     transition-duration: 0.3s;
   }
@@ -140,6 +142,13 @@ export default {
     text-align: center;
     pointer-events: none;
     animation: revealDiv 0.2s ease-in;
+  }
+
+  #favorite {
+    position: absolute;
+    top: 20px;
+    right: 10px;
+    z-index: 10;
   }
 
   @keyframes revealDiv {
@@ -176,9 +185,6 @@ export default {
   img {
     padding-right: 10px;
     padding-bottom: 2px;
-    /* display: flex;
-    flex-direction: column;
-    justify-content: center; */
   }
 
 @keyframes buttonReveal {

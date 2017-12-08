@@ -5,16 +5,17 @@
           app-alert.mt-5(@dismissed="onDismissed" :icon="error.icon" :color="error.color" :submessage="error.submessage" :text="error.message")
       v-layout(row wrap)
         v-flex(xs12 class="text-xs-center")
-          v-btn(large router dark class="deep-purple darken-2" to="/products") See All Products
+          v-btn.mb-3(large transition router dark to="/products")#home-gradient-button See All Products
       v-layout
         v-flex(xs12).text-xs-center
           v-progress-circular(indeterminate color="purple" :width="7" :size="70" v-if="loading").pt-5
       v-layout(row wrap v-if="!loading")
-        v-flex(xs12)
+        v-flex(xs12).text-xs-center
           v-carousel(v-bind="{ 'cycle': cycleStop }" interval="3000" lazy style="cursor: pointer;" delimiter-icon="home" hide-controls)
             v-carousel-item(@mouseover="stopCarousel" @mouseout="startCarousel" v-for="product in products" :src="product.imageUrl" :key="product.id" @click="onLoadProduct(product.id)")
               h1.title {{product.title}}
-      v-layout(row wrap)
+          v-icon(x-large v-if="!userIsAuthenticated")#arrow keyboard_arrow_down
+      v-layout(row wrap v-if="!userIsAuthenticated")
         v-flex(xs12)
           .bg
           .bg.bg2
@@ -60,6 +61,10 @@ export default {
     },
     loading() {
       return this.$store.getters.loading
+    },
+    userIsAuthenticated() {
+      return this.$store.getters.user !== null &&
+      this.$store.getters.user !== undefined
     }
   },
   created() {
@@ -92,6 +97,23 @@ export default {
 </script>
 
 <style>
+  #home-gradient-button {
+  margin: 1em;
+  color: transparent;
+  border: 5px solid transparent;
+  border-image: linear-gradient(to right, #5B15D4 0%,rgba(100,2,68,1) 100%);
+  border-image-slice: 1;
+  background: linear-gradient(to right, #5B15D4 0%,rgba(100,2,68,1) 100%);
+  -webkit-background-clip: text;
+  text-fill-color: transparent;
+  transition: all 0.3s ease-in; 
+    /* background-image: linear-gradient(to right, #5B15D4 0%,rgba(100,2,68,1) 100%); */
+  }
+  #home-gradient-button:hover {
+    background: linear-gradient(to right, #5B15D4 0%,rgba(100,2,68,1) 100%);
+    color:white;
+  }
+
   .title {
     position: absolute;
     bottom: 50px;
@@ -151,5 +173,22 @@ export default {
     bottom: 0;
     position: absolute;
     z-index: 5;
+  }
+
+  #arrow {
+    position: absolute;
+    bottom: 0;
+    animation: arrowDown 1s infinite alternate ease-in-out;
+  }
+
+  @keyframes arrowDown {
+    0% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    100% {
+      opacity: 0.8;
+      transform: translateY(-0.2em);
+    }
   }
 </style>

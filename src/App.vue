@@ -12,7 +12,7 @@
           v-list-tile-content Logout
     v-toolbar(fixed class="deep-purple darken-2" dark)
       v-toolbar-side-icon(@click.native.stop="sideNav = !sideNav" class="hidden-md-and-up")
-      v-toolbar-title 
+      v-toolbar-title#main-title 
         router-link(to="/" tag="span" style="cursor: pointer") Mid-Century Modern
       v-spacer(class="hidden-md-and-down")
       v-text-field(@blur="searchInput = ''" flex color="pink lighten-1" width="300px" prepend-icon="search" placeholder="Search any style" v-model="searchInput" @input="onSearch" single-line hide-details).ml-4.mr-2
@@ -99,6 +99,12 @@
 </script>
 
 <style>
+
+  #main-title {
+    font-family: sans-serif;
+    font-weight: 100;
+  }
+
   #card {
     position: absolute;
     overflow: hidden;
@@ -109,7 +115,7 @@
   }
 
   #app {
-    background-color: #99f;
+    background-color: #ddccff;
   }
 
   /* #app {
