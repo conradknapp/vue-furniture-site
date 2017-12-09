@@ -23,14 +23,14 @@
           h3.hidden-sm-and-down Dressers
         v-tooltip(bottom)
           span Row layout
-          v-btn(icon slot="activator" @click="flex = 12")
-            v-icon(:color="flex === 12 ? 'purple' : ''") view_headline
+          v-btn(icon slot="activator" @click="flag = false")
+            v-icon(:color="flag === false ? 'purple' : ''") view_headline
         v-tooltip(bottom)
           span Mozaic layout
-          v-btn(icon slot="activator" @click="flex = null")
-            v-icon(:color="flex === null ? 'purple' : ''") view_quilt
+          v-btn(icon slot="activator" @click="flag = true")
+            v-icon(:color="flag === true ? 'purple' : ''") view_quilt
     v-layout(row wrap)
-      v-flex(d-flex v-bind="{ [`xs${flex}`]: true }" v-for="product in products" :key="product.title" hover @mouseenter="revealDescription(product)" @mouseleave="description = false")
+      v-flex(d-flex v-bind="{ [`xs${flag ? product.flex : 12}`]: true }" v-for="product in products" :key="product.title" hover @mouseenter="revealDescription(product)" @mouseleave="description = false")
         v-card.mt-3.ml-1.mb-2.mr-2(hover)
           v-card-media(:src="product.imageUrl" :key="product.id" @click="goToProduct(product.id)" tag="button" :height="height")
             v-container(fill-height fluid)
@@ -60,8 +60,8 @@ export default {
   data() {
     return {
       scrollY: '',
+      flag: true,
       pageUpButton: false,
-      flex: 12,
       description: '',
     }
   },
@@ -71,7 +71,7 @@ export default {
       else return '250px'
     },
     products() {
-      return this.$store.getters.loadedProducts
+      return this.$store.getters.getProductsWithFlexProperty
     },
     loading() {
       return this.$store.getters.loading
@@ -146,9 +146,9 @@ export default {
 
   #favorite {
     position: absolute;
-    top: 20px;
+    top: 17px;
     right: 10px;
-    z-index: 10;
+    z-index: 4;
   }
 
   @keyframes revealDiv {

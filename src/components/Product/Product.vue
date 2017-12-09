@@ -7,23 +7,25 @@
       v-flex(xs12)
         v-card(hover)
           v-card-title
-            h1#title {{product.title}}
+            h1#title-product {{product.title}}
             template(v-if='userIsCreator')
               v-spacer
               app-edit-product-details-dialog(:product="product")
           //- add tooltip to picture that prompts them to click for a larger image
-          v-card-media(@click="togglePictureDialog" :src="product.imageUrl" height="300px")
-            v-container(fill-height fluid)
-              v-layout(fill-height)
-                v-flex(xs12 align-end flexbox)
-                  span#favorite
-                    v-btn(icon large v-if="userIsAuthenticated && !userIsCreator" @click="onAgree")
-                      v-icon(color="red darken-4" x-large v-if="onProductLiked") favorite
-                      v-icon(color="red darken-4" x-large v-else) favorite_border
-                    v-btn(icon large v-if="!userIsAuthenticated" @click="onUnAuthFave")
-                      v-icon(x-large color="red darken-4") favorite_border
-                    //- heart-flutter(v-if="unAuthFave")#heart-flutter
-                    //- heart-flutter(v-if="heartLoading")#heart-flutter
+          v-tooltip(right)
+            span Click to enlarge image
+            v-card-media(slot="activator" @click="togglePictureDialog" :src="product.imageUrl" height="300px")
+              v-container(fill-height fluid)
+                v-layout(fill-height)
+                  v-flex(xs12 align-end flexbox)
+                    span#favorite-btn
+                      heart-flutter(v-if="unAuthFave")#heart-flutter
+                      heart-flutter(v-if="heartLoading")#heart-flutter
+                      v-btn(icon large v-if="userIsAuthenticated && !userIsCreator" @mouseenter="mouseEnterHeart = true" @mouseleave="mouseEnterHeart = false" @click="onAgree").heartButton
+                        v-icon(color="red darken-4" x-large v-if="onProductLiked") favorite
+                        v-icon(color="red darken-4" x-large v-else) favorite_border
+                      v-btn(icon large v-if="!userIsAuthenticated" @click="onUnAuthFave")
+                        v-icon(x-large color="red darken-4") favorite_border
           v-dialog(v-model="dialog")
             v-card
               v-card-media(:src="product.imageUrl" height="500px")
@@ -34,13 +36,6 @@
           v-card-actions
             v-btn(flat dark round class="deep-purple darken-2" :href="link.linkUrl" v-for="link in product.links" :key="link.linkTitle") {{link.linkTitle}}
             //- add ability to animate heart no matter where it is located (maybe it already does that), use getClientBounding Rect
-            //- v-btn(icon v-if="userIsAuthenticated && !userIsCreator" @click="onAgree")
-            //-   v-icon(color="red darken-2" v-if="onProductLiked") favorite
-            //-   v-icon(color="red darken-2" v-else) favorite_border
-            //- v-btn(icon v-if="!userIsAuthenticated" @click="onUnAuthFave")
-            //-   v-icon(color="red darken-2") favorite_border
-            heart-flutter(v-if="unAuthFave")#heart-flutter
-            heart-flutter(v-if="heartLoading")#heart-flutter
 </template>
 
 <script>
@@ -50,7 +45,7 @@ export default {
     return {
       dialog: false,
       unAuthFave: false,
-      noToggle: false
+      mouseEnterHeart: false
     }
   }, 
   computed: {
@@ -79,7 +74,6 @@ export default {
   },
   methods: {
     onAgree() {
-      this.noToggle = true
       if (this.onProductLiked) {
         this.$store.dispatch('unfavoriteProduct', this.product.id)
       } else {
@@ -92,7 +86,7 @@ export default {
       setTimeout(() => this.$store.dispatch('unAuthUserClick', {message: `Sign up to save all your favorites`, submessage: `(it only takes a second)`, icon: 'info', color: "info"}), 1500)
     },
     togglePictureDialog() {
-      if (window.innerWidth > 500 && !this.unAuthFave && !this.noToggle) {
+      if (window.innerWidth > 500 && !this.unAuthFave && !this.mouseEnterHeart) {
         this.dialog = !this.dialog
       }
     }
@@ -101,16 +95,35 @@ export default {
 </script>
 
 <style>
-  #heart-flutter {
-    transform: translate(790px, -470px);
-    cursor: pointer;
+
+  #title-product {
+    font-family: sans-serif;
+    font-weight: 100;
+    padding: 3px 10px;
+    position: relative;
+    display: inline-block;
+    color: white;
+    overflow: hidden;
+    background: rgba(0,0,0,0.3);
   }
 
-  h1 {
-    font-family: sans-serif
+  #title-product:hover {
+    background-color: rgba(74, 20, 140, 0.4);
+    transition-duration: 0.3s;
+  }
+
+  #heart-flutter {
+    transform: translateY(-100px);
+  }
+
+  #favorite-btn {
+    position: absolute;
+    top: 17px;
+    right: 10px;
+    z-index: 20;
   }
 
   h3 {
-    font-weight: 400;
+    font-weight: 100;
   }
 </style>

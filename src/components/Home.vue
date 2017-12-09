@@ -14,6 +14,7 @@
           v-carousel(v-bind="{ 'cycle': cycleStop }" interval="3000" lazy style="cursor: pointer;" delimiter-icon="home" hide-controls)
             v-carousel-item(@mouseover="stopCarousel" @mouseout="startCarousel" v-for="product in products" :src="product.imageUrl" :key="product.id" @click="onLoadProduct(product.id)")
               h1.title {{product.title}}
+          v-icon.pb-2(x-large v-if="!userIsAuthenticated")#arrow keyboard_arrow_down
           v-icon(x-large v-if="!userIsAuthenticated")#arrow keyboard_arrow_down
       v-layout(row wrap v-if="!userIsAuthenticated")
         v-flex(xs12)
@@ -21,33 +22,41 @@
           .bg.bg2
           .bg.bg3
           .content
-            v-flex(xs12 sm6 offset-sm3)
-              v-card(color="orange lighten-2")
-                v-card-text
-                  v-container
-                    form(@submit.prevent="onSignup")
-                      v-layout(row)
-                        v-flex(xs12)
-                          v-text-field(name="email" label="Email" id="email" v-model="email" type="email" prepend-icon="email" required)
-                      v-layout(row)
-                        v-flex(xs12)
-                          v-text-field(name="password" label="Password" id="password" v-model="password" 
-                          prepend-icon="extension" type="password" required)
-                      v-layout(row)
-                        v-flex(xs12)
-                          v-text-field(name="confirmPassword" label="Confirm Password" id="confirmPassword" v-model="confirmPassword" type="password" prepend-icon="gavel" :rules="[comparePasswords]" required)
-                      v-layout(row).text-sm-center
-                        v-flex(xs12)
-                          v-btn(color="blue" dark type="submit" :disabled='loading' :loading="loading") Submit
-                            span(slot="loader").custom-loader
-                              v-icon(light) cached
+            v-container.slide-in
+              v-layout(row wrap v-if="error && !loading")
+                v-flex(xs12 sm6 offset-sm3)
+                  app-alert(@dismissed="onDismissed" :icon="error.icon" :color="error.color" :submessage="error.submessage" :text="error.message")
+              v-layout(row wrap)
+                v-flex(xs12 sm6 offset-sm3)
+                  v-card(color="orange lighten-2")
+                    v-card-text
+                      v-container
+                        form(@submit.prevent="onSignup")
+                          v-layout(row)
+                            v-flex(xs12)
+                              v-text-field(name="email" label="Email" id="email" v-model="email" type="email" prepend-icon="email" required)
+                          v-layout(row)
+                            v-flex(xs12)
+                              v-text-field(name="password" label="Password" id="password" v-model="password" 
+                              prepend-icon="extension" type="password" required)
+                          v-layout(row)
+                            v-flex(xs12)
+                              v-text-field(name="confirmPassword" label="Confirm Password" id="confirmPassword" v-model="confirmPassword" type="password" prepend-icon="gavel" :rules="[comparePasswords]" required)
+                          v-layout(row).text-sm-center
+                            v-flex(xs12)
+                              v-btn(color="blue" dark type="submit" :disabled='loading' :loading="loading") Submit
+                                span(slot="loader").custom-loader
+                                  v-icon(light) cached
 </template>
 
 <script>
 export default {
   data() {
     return {
-      cycleStop: true
+      cycleStop: true,
+      email: '',
+      password: '',
+      confirmPassword: ''
     }
   },
   computed: {
@@ -65,12 +74,30 @@ export default {
     userIsAuthenticated() {
       return this.$store.getters.user !== null &&
       this.$store.getters.user !== undefined
+    },
+    comparePasswords() {
+      if (this.password !== this.confirmPassword) {
+        return 'Passwords do not match'
+      } else {
+        return ''
+      }
+    }
+  },
+  watch: {
+    user(value) {
+      if (value !== null && value !== undefined) {
+        this.$router.push('/')
+      }
     }
   },
   created() {
     setTimeout(() => {
       this.$store.dispatch('clearError')
     }, 5000)
+    window.addEventListener('scroll', this.checkSlide);
+  },
+  destroyed() {
+      window.removeEventListener('scroll', this.checkSlide);
   },
   methods: {
     onLoadProduct(id) {
@@ -84,6 +111,21 @@ export default {
     },
     onDismissed() {
       this.$store.dispatch('clearError')
+    },
+    onSignup() {
+      this.$store.dispatch('signUserUp', {email: this.email, password: this.password})
+    },
+    checkSlide(e) {
+      const slidingForm = document.querySelector(".slide-in");
+      const slideInAt = (scrollY + innerHeight) - (slidingForm.offsetHeight / 2);
+      const formBottom = slidingForm.offsetTop + slidingForm.offsetHeight + 1000;
+      const half = slideInAt > slidingForm.offsetTop;
+      const notScrolledPast = window.scrollY < formBottom ;
+      if (half && notScrolledPast) {
+        slidingForm.classList.add('active');
+      } else {
+        slidingForm.classList.remove('active');
+      }
     }
   }
 }
@@ -106,7 +148,7 @@ export default {
   background: linear-gradient(to right, #5B15D4 0%,rgba(100,2,68,1) 100%);
   -webkit-background-clip: text;
   text-fill-color: transparent;
-  transition: all 0.3s ease-in; 
+  animation: all 0.3s ease-in; 
     /* background-image: linear-gradient(to right, #5B15D4 0%,rgba(100,2,68,1) 100%); */
   }
   #home-gradient-button:hover {
@@ -142,8 +184,8 @@ export default {
     position: absolute;
     right: -50%;
     top: 100%;
-    z-index: 2;
-    height: 500px;
+    z-index: 1;
+    height: 600px;
   }
 
   .bg2 {
@@ -166,19 +208,21 @@ export default {
 
   .content {
     width: 100%;
-    padding-top: 60px;
     top: 100%;
+    margin-top: 100px;
     left: 0;
     right: 0;
     bottom: 0;
     position: absolute;
-    z-index: 5;
+    z-index: 1;
   }
 
   #arrow {
     position: absolute;
     bottom: 0;
-    animation: arrowDown 1s infinite alternate ease-in-out;
+    left: 0;
+    right: 0;
+    animation: arrowDown .7s infinite alternate ease-in-out;
   }
 
   @keyframes arrowDown {
@@ -187,8 +231,19 @@ export default {
       transform: translateY(0);
     }
     100% {
-      opacity: 0.8;
+      opacity: 0.7;
       transform: translateY(-0.2em);
     }
+  }
+
+  .slide-in {
+    opacity: 0;
+    transform: translateX(-20%) scale(1);
+    transition: all 2s;
+  }
+
+  .slide-in.active {
+    opacity: 1;
+    transform: translateX(0%) scale(1);
   }
 </style>

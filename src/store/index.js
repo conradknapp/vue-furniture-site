@@ -237,6 +237,7 @@ export const store = new Vuex.Store({
               fbKeys: {}
             }
             commit('setUser', newUser)
+            commit('setError', {message: `You are now signed up!!`, icon: 'check_circle', color: 'green'})
           }
         )
         .catch(error => {

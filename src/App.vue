@@ -117,8 +117,4 @@
   #app {
     background-color: #ddccff;
   }
-
-  /* #app {
-    background-image: linear-gradient(rgba(15, 2, 255, 0.4), rgba(100, 80, 205, 0.05) 80%), linear-gradient(-45deg, rgba(120, 35, 70, 0.8) 25%, rgba(155, 60, 235, 0.9) 75%);
-  } */
 </style>
