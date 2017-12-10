@@ -1,5 +1,8 @@
 <template lang="pug">
   v-container
+    v-layout(row wrap v-if="!error")
+      v-flex(xs12 sm6 offset-sm3).text-xs-center
+        h1 Welcome Back!
     v-layout(row v-if="error")
       v-flex(xs12 sm6 offset-sm3)
         app-alert(@dismissed="onDismissed" :text="error.message" :color="error.color" :icon="error.icon")
@@ -15,7 +18,7 @@
                 v-layout(row)
                   v-flex(xs12)
                     v-text-field(name="password" label="Password" id="password" v-model="password" type="password" required)
-                v-layout(row)
+                v-layout(row).text-xs-center
                   v-flex(xs12)
                     v-btn(type="submit" :disabled='loading' :loading="loading" color="orange") Sign in
                       span(slot="loader").custom-loader

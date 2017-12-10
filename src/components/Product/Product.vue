@@ -18,9 +18,9 @@
               v-container(fill-height fluid)
                 v-layout(fill-height)
                   v-flex(xs12 align-end flexbox)
-                    span#favorite-btn
-                      heart-flutter(v-if="unAuthFave")#heart-flutter
-                      heart-flutter(v-if="heartLoading")#heart-flutter
+                    div#favorite-btn
+                      heart-flutter(v-if="unAuthFave && !dontShow")#heart-flutter
+                      heart-flutter(v-if="heartLoading && !dontShow")#heart-flutter
                       v-btn(icon large v-if="userIsAuthenticated && !userIsCreator" @mouseenter="mouseEnterHeart = true" @mouseleave="mouseEnterHeart = false" @click="onAgree").heartButton
                         v-icon(color="red darken-4" x-large v-if="onProductLiked") favorite
                         v-icon(color="red darken-4" x-large v-else) favorite_border
@@ -45,7 +45,8 @@ export default {
     return {
       dialog: false,
       unAuthFave: false,
-      mouseEnterHeart: false
+      mouseEnterHeart: false,
+      dontShow: false
     }
   }, 
   computed: {
@@ -75,12 +76,22 @@ export default {
   methods: {
     onAgree() {
       if (this.onProductLiked) {
+        if (window.scrollY > 25) {
+         this.dontShow = true 
+        }
         this.$store.dispatch('unfavoriteProduct', this.product.id)
       } else {
+        if (window.scrollY > 25) {
+          this.dontShow = true
+        }
         this.$store.dispatch('favoriteProduct', this.product.id)
       }
     },
     onUnAuthFave() {
+      if (scrollY > 25) {
+       this.dontShow = true
+       this.unAuthFave = true 
+      }
       this.unAuthFave = true
       setTimeout(() => this.$router.push('/signup'), 1000)
       setTimeout(() => this.$store.dispatch('unAuthUserClick', {message: `Sign up to save all your favorites`, submessage: `(it only takes a second)`, icon: 'info', color: "info"}), 1500)
@@ -114,13 +125,16 @@ export default {
 
   #heart-flutter {
     transform: translateY(-100px);
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index:99;
   }
 
   #favorite-btn {
     position: absolute;
     top: 17px;
     right: 10px;
-    z-index: 20;
   }
 
   h3 {

@@ -21,7 +21,6 @@
 <style scoped>
 .container {
   position: absolute;
-  z-index: 4;
 }
 
 .heart:nth-child(1) svg {

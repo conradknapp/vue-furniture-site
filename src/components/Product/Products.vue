@@ -40,12 +40,6 @@
                   span(v-if="product.description === description" v-text="description")#description
                   span#favorite
                     v-icon(color="red darken-4" x-large) favorite_outline
-          //- v-card-actions
-          //-   v-btn(dark flat color="purple darken-4" :to="'/products/' + product.id")
-          //-     v-icon arrow_forward
-          //-   v-spacer
-          //-   v-btn(icon)
-          //-     v-icon(color="red darken-2") favorite_outline
     v-layout(v-if="pageUpButton")
       v-flex#btn-container
         v-btn(color="grey darken-2" @click="backToTop" absolute dark fixed bottom fab)#btn
@@ -148,7 +142,7 @@ export default {
     position: absolute;
     top: 17px;
     right: 10px;
-    z-index: 4;
+    z-index: 1;
   }
 
   @keyframes revealDiv {

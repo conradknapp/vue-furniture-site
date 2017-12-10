@@ -2,27 +2,31 @@
     v-container
       v-layout(row wrap v-if="error && !loading")
         v-flex(xs12)
-          app-alert.mt-5(@dismissed="onDismissed" :icon="error.icon" :color="error.color" :submessage="error.submessage" :text="error.message")
-      v-layout(row wrap)
+          app-alert(@dismissed="onDismissed" :icon="error.icon" :color="error.color" :submessage="error.submessage" :text="error.message")#app-alert
+      v-layout(row wrap v-if="!loading")
         v-flex(xs12 class="text-xs-center")
-          v-btn.mb-3(large transition router dark to="/products")#home-gradient-button See All Products
+          v-btn(large transition router dark to="/products")#home-gradient-button See All Products
       v-layout
         v-flex(xs12).text-xs-center
-          v-progress-circular(indeterminate color="purple" :width="7" :size="70" v-if="loading").pt-5
+          v-progress-circular(indeterminate color="purple" :width="7" :size="70" v-if="loading")
       v-layout(row wrap v-if="!loading")
         v-flex(xs12).text-xs-center
-          v-carousel(v-bind="{ 'cycle': cycleStop }" interval="3000" lazy style="cursor: pointer;" delimiter-icon="home" hide-controls)
+          v-carousel.mb-5(v-bind="{ 'cycle': cycleStop }" interval="3000" lazy style="cursor: pointer;" delimiter-icon="home" hide-controls)
             v-carousel-item(@mouseover="stopCarousel" @mouseout="startCarousel" v-for="product in products" :src="product.imageUrl" :key="product.id" @click="onLoadProduct(product.id)")
               h1.title {{product.title}}
-          v-icon.pb-2(x-large v-if="!userIsAuthenticated")#arrow keyboard_arrow_down
-          v-icon(x-large v-if="!userIsAuthenticated")#arrow keyboard_arrow_down
+          span
+            v-icon.mb-2(x-large v-if="!userIsAuthenticated")#arrow keyboard_arrow_down
+            v-icon(x-large v-if="!userIsAuthenticated")#arrow keyboard_arrow_down
       v-layout(row wrap v-if="!userIsAuthenticated")
         v-flex(xs12)
-          .bg
+          .b
           .bg.bg2
           .bg.bg3
           .content
             v-container.slide-in
+              v-layout(row wrap v-if="!error")
+                v-flex(xs12 sm6 offset-sm3).text-xs-center
+                  h1 Let's Get Started
               v-layout(row wrap v-if="error && !loading")
                 v-flex(xs12 sm6 offset-sm3)
                   app-alert(@dismissed="onDismissed" :icon="error.icon" :color="error.color" :submessage="error.submessage" :text="error.message")
@@ -31,7 +35,7 @@
                   v-card(color="orange lighten-2")
                     v-card-text
                       v-container
-                        form(@submit.prevent="onSignup")
+                        form(@submit.prevent="onSignup" @input="signUpInput = true")
                           v-layout(row)
                             v-flex(xs12)
                               v-text-field(name="email" label="Email" id="email" v-model="email" type="email" prepend-icon="email" required)
@@ -42,7 +46,7 @@
                           v-layout(row)
                             v-flex(xs12)
                               v-text-field(name="confirmPassword" label="Confirm Password" id="confirmPassword" v-model="confirmPassword" type="password" prepend-icon="gavel" :rules="[comparePasswords]" required)
-                          v-layout(row).text-sm-center
+                          v-layout(row).text-xs-center
                             v-flex(xs12)
                               v-btn(color="blue" dark type="submit" :disabled='loading' :loading="loading") Submit
                                 span(slot="loader").custom-loader
@@ -56,7 +60,8 @@ export default {
       cycleStop: true,
       email: '',
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
+      signUpInput: null
     }
   },
   computed: {
@@ -139,21 +144,27 @@ export default {
 </script>
 
 <style>
+
+  #app-alert {
+    margin-top: 4rem;
+  }
+
   #home-gradient-button {
-  margin: 1em;
-  color: transparent;
-  border: 5px solid transparent;
-  border-image: linear-gradient(to right, #5B15D4 0%,rgba(100,2,68,1) 100%);
-  border-image-slice: 1;
-  background: linear-gradient(to right, #5B15D4 0%,rgba(100,2,68,1) 100%);
-  -webkit-background-clip: text;
-  text-fill-color: transparent;
-  animation: all 0.3s ease-in; 
+    margin-top: 5em;
+    background: linear-gradient(to right, #5B15D4 0%,rgba(100,2,68,1) 100%);
+    color:white;
+    transition: hover 0.1s linear; 
     /* background-image: linear-gradient(to right, #5B15D4 0%,rgba(100,2,68,1) 100%); */
   }
   #home-gradient-button:hover {
+    border: 2px solid transparent;
+    border-image: linear-gradient(to right, #5B15D4 0%,rgba(100,2,68,1) 100%);
+    border-image-slice: 1;
     background: linear-gradient(to right, #5B15D4 0%,rgba(100,2,68,1) 100%);
-    color:white;
+    -webkit-background-clip: text;
+    text-fill-color: transparent;
+    color: transparent;
+    border-radius: 2px;
   }
 
   .title {

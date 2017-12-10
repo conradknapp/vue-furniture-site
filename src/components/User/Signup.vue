@@ -1,5 +1,8 @@
 <template lang="pug">
   v-container
+    v-layout(row wrap v-if="!error")
+      v-flex(xs12 sm6 offset-sm3).text-xs-center
+        h1 Get started here
     v-layout(row v-if="error")
       v-flex(xs12 sm6 offset-sm3)
         app-alert(@dismissed="onDismissed" :text="error.message" :submessage="error.submessage" :color="error.color" :icon="error.icon")
@@ -18,9 +21,9 @@
                 v-layout(row)
                   v-flex(xs12)
                     v-text-field(name="confirmPassword" label="Confirm Password" id="confirmPassword" v-model="confirmPassword" type="password" :rules="[comparePasswords]" required)
-                v-layout(row)
+                v-layout(row).text-xs-center
                   v-flex(xs12)
-                    v-btn(color="blue" outline type="submit" :disabled='loading' :loading="loading") Sign Up
+                    v-btn(color="blue" dark type="submit" :disabled='loading' :loading="loading") Sign Up
                       span(slot="loader").custom-loader
                         v-icon(light) cached
 </template>
