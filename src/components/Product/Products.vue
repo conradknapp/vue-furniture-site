@@ -38,8 +38,12 @@
                 v-flex(xs12 align-end flexbox)
                   span(v-text="product.title")#title.hidden-xs-only.headline
                   span(v-if="product.description === description" v-text="description")#description
-                  span#favorite
-                    v-icon(color="red darken-4" x-large) favorite_outline
+                  div#favorite
+                    v-btn(icon large v-if="userIsAuthenticated" @mouseenter="mouseEnterHeart = true" @mouseleave="mouseEnterHeart = false" @click="onAgree(product)")
+                      v-icon(color="red darken-4" x-large v-if="userFavorites.includes(product.id)") favorite
+                      v-icon(color="red darken-4" x-large v-else) favorite_border
+                    v-btn(icon large v-if="!userIsAuthenticated" @click="onUnAuthFave")
+                      v-icon(color="red darken-4" x-large) favorite_border
     v-layout(v-if="pageUpButton")
       v-flex#btn-container
         v-btn(color="grey darken-2" @click="backToTop" absolute dark fixed bottom fab)#btn
@@ -47,6 +51,11 @@
     v-layout
       v-flex(xs12).text-xs-center
         v-progress-circular(indeterminate color="orange darken-3" :width="7" :size="70" height="200px" v-if="loading")
+    v-layout(v-if="!loading")
+      v-flex(xs12).text-xs-center
+        h1 {{resultsLog}}
+          v-icon.ml-3(large right) sentiment_very_dissatisfied
+
 </template>
 
 <script>
@@ -57,6 +66,8 @@ export default {
       flag: true,
       pageUpButton: false,
       description: '',
+      mouseEnterHeart: false,
+      unAuthFave: false
     }
   },
   computed: {
@@ -69,6 +80,25 @@ export default {
     },
     loading() {
       return this.$store.getters.loading
+    },
+    userIsAuthenticated() {
+      return this.$store.getters.user !== null &&
+      this.$store.getters.user !== undefined
+    },
+    userIsCreator() {
+      if (!this.userIsAuthenticated) {
+        return false
+      }
+      return this.$store.getters.user.id === this.product.creatorId
+    },
+    onProductLiked(product) {
+      return this.$store.getters.user.favoritedProducts.includes(product.id)
+    },
+    userFavorites() {
+      return this.$store.getters.user.favoritedProducts
+    },
+    resultsLog() {
+      return this.$store.getters.resultsLog
     }
   },
   created() {
@@ -90,16 +120,31 @@ export default {
       window.scroll({top: 0, left: 0, behavior: 'smooth' })
     },
     goToProduct(id) {
+      if (!this.unAuthFave && !this.mouseEnterHeart) {
       this.$router.push('/products/' + id)
+      }
     },
     onPageBottom() {
-      if (window.scrollY === document.body.scrollHeight - window.innerHeight) {
+      if (window.scrollY === document.body.scrollHeight - window.innerHeight && !this.resultsLog) {
         this.$store.dispatch('infiniteScroll')
       }
     },
     revealDescription(product) {
         if (this.products.find(el => el.id === product.id))
          this.description = product.description
+    },
+    onUnAuthFave() {
+      this.unAuthFave = true
+      setTimeout(() => this.$router.push('/signup'), 1000)
+      setTimeout(() => this.$store.dispatch('unAuthUserClick', {message: `Sign up to save all your favorites`, submessage: `(it only takes a second)`, icon: 'info', color: "info"}), 1500)
+    },
+    onAgree(product) {
+      if (this.userFavorites.includes(product.id)) {
+        this.$store.dispatch('unfavoriteProduct', product.id)
+        console.log('yes')
+      } else {
+        this.$store.dispatch('favoriteProduct', product.id)
+      }
     }
   }
  }

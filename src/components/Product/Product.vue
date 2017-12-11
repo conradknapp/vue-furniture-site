@@ -8,10 +8,12 @@
         v-card(hover)
           v-card-title
             h1#title-product {{product.title}}
+            v-spacer
+            v-btn(icon dark color="indigo" @click="navBack")#backspace
+              v-icon arrow_back
             template(v-if='userIsCreator')
               v-spacer
               app-edit-product-details-dialog(:product="product")
-          //- add tooltip to picture that prompts them to click for a larger image
           v-tooltip(right)
             span Click to enlarge image
             v-card-media(slot="activator" @click="togglePictureDialog" :src="product.imageUrl" height="300px")
@@ -21,7 +23,7 @@
                     div#favorite-btn
                       heart-flutter(v-if="unAuthFave && !dontShow")#heart-flutter
                       heart-flutter(v-if="heartLoading && !dontShow")#heart-flutter
-                      v-btn(icon large v-if="userIsAuthenticated && !userIsCreator" @mouseenter="mouseEnterHeart = true" @mouseleave="mouseEnterHeart = false" @click="onAgree").heartButton
+                      v-btn(icon large v-if="userIsAuthenticated && !userIsCreator" @mouseenter="mouseEnterHeart = true" @mouseleave="mouseEnterHeart = false" @click="onAgree")
                         v-icon(color="red darken-4" x-large v-if="onProductLiked") favorite
                         v-icon(color="red darken-4" x-large v-else) favorite_border
                       v-btn(icon large v-if="!userIsAuthenticated" @click="onUnAuthFave")
@@ -30,12 +32,11 @@
             v-card
               v-card-media(:src="product.imageUrl" height="500px")
           v-card-text
-            v-chip.mb-3(color="orange darken-3" text-color="white" v-for="p in product.categories" :key="p").hidden-sm-and-down {{p}}
-              v-icon(right) label
+            //- v-chip.mb-3(color="orange darken-3" text-color="white" v-for="p in product.categories" :key="p").hidden-sm-and-down {{p}}
+            //-   v-icon(right) label
             h3 {{product.description}}
           v-card-actions
             v-btn(flat dark round class="deep-purple darken-2" :href="link.linkUrl" v-for="link in product.links" :key="link.linkTitle") {{link.linkTitle}}
-            //- add ability to animate heart no matter where it is located (maybe it already does that), use getClientBounding Rect
 </template>
 
 <script>
@@ -100,13 +101,15 @@ export default {
       if (window.innerWidth > 500 && !this.unAuthFave && !this.mouseEnterHeart) {
         this.dialog = !this.dialog
       }
+    },
+    navBack() {
+      this.$router.go(-1)
     }
   }
 }
 </script>
 
 <style>
-
   #title-product {
     font-family: sans-serif;
     font-weight: 100;
@@ -135,6 +138,19 @@ export default {
     position: absolute;
     top: 17px;
     right: 10px;
+  }
+
+  #backspace:hover {
+    animation: arrowLeft 0.7s infinite alternate ease-in-out;
+  }
+
+  @keyframes arrowLeft {
+    0% {
+      transform: translate(0);
+    }
+    100% {
+      transform: translate(-0.2em);
+    }
   }
 
   h3 {

@@ -14,7 +14,8 @@ export const store = new Vuex.Store({
     searchResults: [],
     productLiked: null,
     oldestKey: ``,
-    justSignedIn: null
+    justSignedIn: null,
+    resultsLog: null
   },
   mutations: {
     favoriteProduct(state, payload) {
@@ -67,6 +68,9 @@ export const store = new Vuex.Store({
     },
     setHeartLoading(state, payload) {
       state.heartLoading = payload
+    },
+    setResultsLog(state, payload) {
+      state.resultsLog = payload
     }
   },
   actions: {
@@ -92,15 +96,21 @@ export const store = new Vuex.Store({
                 creatorId: obj[key].creatorId
               })
             }
+            
             let slice = products.slice(1)
             let arrayOfKeys = Object.keys(data.val())
             // let results = arrayOfKeys
             //   .map(key => snapshot.val()[key])
             //   .reverse()
             //   .slice(1)
+            if (arrayOfKeys.length === 1) {
+              commit('setLoading', false)
+              commit('setResultsLog', 'There are no more results')
+              return
+            }
             commit('setOldestKey', arrayOfKeys[0])
             commit('setLoadedProducts', slice)
-            commit('setLoading', false)
+            commit('setLoading', false) 
           })
     },
     searchProduct({commit}, payload) {
@@ -158,7 +168,7 @@ export const store = new Vuex.Store({
       let oldestKey = ``
       firebase.database().ref('products')
         .orderByKey()
-        .limitToLast(5)
+        .limitToLast(4)
         .once('value')
         .then(data => {
           const products = []
@@ -352,6 +362,9 @@ export const store = new Vuex.Store({
     },
     heartLoading(state) {
       return state.heartLoading
+    },
+    resultsLog(state) {
+      return state.resultsLog
     }
   }
 })

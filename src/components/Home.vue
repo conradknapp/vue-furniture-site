@@ -138,7 +138,7 @@ export default {
 
 // Save your favorites (heart animation)
 
-// Find furniture your love
+// Find furniture you love
 
 // Beautify your home (home animation)
 </script>

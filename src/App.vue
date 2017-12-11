@@ -13,8 +13,8 @@
     v-toolbar(fixed class="deep-purple darken-2" dark)
       v-toolbar-side-icon(@click.native.stop="sideNav = !sideNav" class="hidden-md-and-up")
       v-toolbar-title#main-title 
-        router-link(to="/" tag="span" style="cursor: pointer") Mid-Century Modern
-      v-spacer(class="hidden-md-and-down")
+        router-link(to="/" tag="span" style="cursor: pointer") MCM & More
+      v-spacer(class="hidden-lg-and-down")
       v-text-field(@blur="searchInput = ''" flex color="pink lighten-1" width="300px" prepend-icon="search" placeholder="Search any style" v-model="searchInput" @input="onSearch" single-line hide-details).ml-4.mr-2
       v-card(dark v-if="onSearchResults")#card
         v-list
@@ -120,7 +120,7 @@
   .profile {
     transform: translateX(-13px);
   }
-
+ 
   .imgContainer {
     display: flex;
     align-items: center;
