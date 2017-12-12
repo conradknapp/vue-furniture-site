@@ -51,7 +51,7 @@
     v-layout
       v-flex(xs12).text-xs-center
         v-progress-circular(indeterminate color="orange darken-3" :width="7" :size="70" height="200px" v-if="loading")
-    v-layout(v-if="!loading")
+    v-layout(v-if="!loading && resultsLog")
       v-flex(xs12).text-xs-center
         h1 {{resultsLog}}
           v-icon.ml-3(large right) sentiment_very_dissatisfied
@@ -126,7 +126,7 @@ export default {
     },
     onPageBottom() {
       if (window.scrollY === document.body.scrollHeight - window.innerHeight && !this.resultsLog) {
-        this.$store.dispatch('infiniteScroll')
+        setTimeout(() => this.$store.dispatch('infiniteScroll'), 50)
       }
     },
     revealDescription(product) {

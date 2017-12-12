@@ -74,6 +74,39 @@ export const store = new Vuex.Store({
     }
   },
   actions: {
+    loadProducts({commit}) {
+      commit('setLoading', true)
+      let oldestKey = ``
+      firebase.database().ref('products')
+        .orderByKey()
+        .limitToLast(3)
+        .once('value')
+        .then(data => {
+          const products = []
+          const obj = data.val()
+          for (let key in obj) {
+            products.push({
+              id: key,
+              title: obj[key].title,
+              categories: obj[key].categories,
+              imageUrl: obj[key].imageUrl,
+              description: obj[key].description,
+              links: obj[key].links,
+              date: obj[key].date,
+              creatorId: obj[key].creatorId
+            })
+          }
+          let arrayOfKeys = Object.keys(data.val())
+          oldestKey = arrayOfKeys[0]
+          commit('setLoadedProducts', products.reverse())
+          commit('setOldestKey', oldestKey)
+          commit('setLoading', false)
+        })
+        .catch(error => {
+          commit('setLoading', false)
+          console.log(error)
+        })
+    },
       infiniteScroll({commit, getters}) {
         commit('setLoading', true)
         firebase.database().ref('products')
@@ -97,7 +130,7 @@ export const store = new Vuex.Store({
               })
             }
             
-            let slice = products.slice(1)
+            let slice = products.reverse().slice(1)
             let arrayOfKeys = Object.keys(data.val())
             // let results = arrayOfKeys
             //   .map(key => snapshot.val()[key])
@@ -160,39 +193,6 @@ export const store = new Vuex.Store({
           commit('unfavoriteProduct', payload)
         })
         .catch(error => {
-          console.log(error)
-        })
-    },
-    loadProducts({commit}) {
-      commit('setLoading', true)
-      let oldestKey = ``
-      firebase.database().ref('products')
-        .orderByKey()
-        .limitToLast(4)
-        .once('value')
-        .then(data => {
-          const products = []
-          const obj = data.val()
-          for (let key in obj) {
-            products.push({
-              id: key,
-              title: obj[key].title,
-              categories: obj[key].categories,
-              imageUrl: obj[key].imageUrl,
-              description: obj[key].description,
-              links: obj[key].links,
-              date: obj[key].date,
-              creatorId: obj[key].creatorId
-            })
-          }
-          let arrayOfKeys = Object.keys(data.val())
-          let oldestKey = arrayOfKeys[0]
-          commit('setLoadedProducts', products)
-          commit('setOldestKey', oldestKey)
-          commit('setLoading', false)
-        })
-        .catch(error => {
-          commit('setLoading', false)
           console.log(error)
         })
     },
