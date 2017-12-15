@@ -156,6 +156,7 @@ export default {
     transition: hover 0.1s linear; 
     /* background-image: linear-gradient(to right, #5B15D4 0%,rgba(100,2,68,1) 100%); */
   }
+  
   #home-gradient-button:hover {
     border: 2px solid transparent;
     border-image: linear-gradient(to right, #5B15D4 0%,rgba(100,2,68,1) 100%);
@@ -196,7 +197,7 @@ export default {
     right: -50%;
     top: 100%;
     z-index: 1;
-    height: 600px;
+    height: 90vh;
   }
 
   .bg2 {

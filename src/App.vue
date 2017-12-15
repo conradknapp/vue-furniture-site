@@ -35,11 +35,9 @@
           v-flex
             v-card(v-if="showFave && userIsAuthenticated")#profile-card
               v-list(three-line).mt-2
-                v-list-tile.ml-1.mb-3(v-if="showFave && userFavorites.includes(product.id)" v-for="product in products" :key="product.title")
+                v-list-tile.ml-1.mb-3(v-if="showFave && userFavorites.includes(product.id)" v-for="product in allProducts" :key="product.title")
                   v-list-tile-content(@click="goToProduct(product.id)").imgContainer
                     img(:src="product.imageUrl").faveImg
-                //- v-list-tile-content
-                //-   img(height="90px" width="130px" :src="product.imageUrl" @click="goToProduct(product.id)").profile
         v-btn(flat v-if="userIsAuthenticated" @click="onLogout")
           v-icon(left) exit_to_app
           | Logout
@@ -66,7 +64,6 @@
         ]
         if (this.userIsAuthenticated) {
           menuItems = [
-            // { icon: 'home', title: 'Home Page', link: '/' },
             { icon: 'weekend', title: 'Products', link: '/products' }
           ]
         }
@@ -94,11 +91,12 @@
         }
       },
       userFavorites() {
-        // need to return the most recent five (slice(0,5) and sorted by date they were fav)orited)
+        // need to return the most recent five (slice(0,5) and sorted by date they were favorited)
         return this.$store.getters.user.favoritedProducts.slice(0,5)
       },
-      products() {
-        return this.$store.getters.loadedProducts
+      allProducts() {
+        // this.$store.dispatch('loadAllProducts')
+        return this.$store.getters.allProducts
       }
     },
     methods: {
@@ -111,6 +109,9 @@
       goToProduct(id) {
         this.$router.push('/products/' + id)
       }
+    },
+    beforeMount() {
+      this.$store.dispatch('loadAllProducts')
     }
   }
 </script>
@@ -125,6 +126,7 @@
     display: flex;
     align-items: center;
     flex-direction: column;
+    cursor: pointer;
   }
   
   .faveImg {

@@ -7,6 +7,7 @@ Vue.use(Vuex)
 export const store = new Vuex.Store({
   state: {
     loadedProducts: [],
+    allProducts: [],
     user: null,
     loading: null,
     heartLoading: null,
@@ -71,9 +72,40 @@ export const store = new Vuex.Store({
     },
     setResultsLog(state, payload) {
       state.resultsLog = payload
+    },
+    setAllProducts(state, payload) {
+      state.allProducts = payload
     }
   },
   actions: {
+    loadAllProducts({commit}) {
+      commit('setLoading', true)
+      firebase.database().ref('products')
+        .orderByKey()
+        .once('value')
+        .then(data => {
+          const products = []
+          const obj = data.val()
+          for (let key in obj) {
+            products.push({
+              id: key,
+              title: obj[key].title,
+              categories: obj[key].categories,
+              imageUrl: obj[key].imageUrl,
+              description: obj[key].description,
+              links: obj[key].links,
+              date: obj[key].date,
+              creatorId: obj[key].creatorId
+            })
+          }
+          commit('setAllProducts', products)
+          commit('setLoading', false)
+        })
+        .catch(error => {
+          commit('setLoading', false)
+          console.log(error)
+        })
+    },
     loadProducts({commit}) {
       commit('setLoading', true)
       let oldestKey = ``
@@ -138,7 +170,7 @@ export const store = new Vuex.Store({
             //   .slice(1)
             if (arrayOfKeys.length === 1) {
               commit('setLoading', false)
-              commit('setResultsLog', 'There are no more results')
+              commit('setResultsLog', 'You have reached the end')
               return
             }
             commit('setOldestKey', arrayOfKeys[0])
@@ -365,6 +397,9 @@ export const store = new Vuex.Store({
     },
     resultsLog(state) {
       return state.resultsLog
+    },
+    allProducts(state) {
+      return state.allProducts
     }
   }
 })

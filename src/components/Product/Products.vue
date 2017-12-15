@@ -2,25 +2,7 @@
   //- add debounce function to infinite scroll
   v-container(grey lighten-2 fluid grid-list-md).pt-5.mt-5
     v-layout(row wrap v-if='!loading').hidden-xs-only
-      v-flex(xs12 d-flex)
-        v-btn(dark large).gradient-btn.btn-1
-          v-icon(left) event_seat
-          h3.hidden-sm-and-down Chairs
-        v-btn(dark large).gradient-btn.btn-2
-          v-icon(left) weekend
-          h3.hidden-sm-and-down Sofas
-        v-btn(dark large).gradient-btn.btn-3
-          img(src="../../assets/table.svg")
-          h3.hidden-sm-and-down Tables
-        v-btn(dark large).gradient-btn.btn-4
-          img(src="../../assets/lamp.svg")
-          h3.hidden-sm-and-down Lamps
-        v-btn(dark large).gradient-btn.btn-5
-          img(src="../../assets/bed.svg")
-          h3.hidden-sm-and-down Beds
-        v-btn(dark large).gradient-btn.btn-6
-          img(src="../../assets/dresser.svg")
-          h3.hidden-sm-and-down Dressers
+      v-flex(xs12)
         v-tooltip(bottom)
           span Row layout
           v-btn(icon slot="activator" @click="flag = false")
@@ -67,7 +49,8 @@ export default {
       pageUpButton: false,
       description: '',
       mouseEnterHeart: false,
-      unAuthFave: false
+      unAuthFave: false,
+      row: null
     }
   },
   computed: {
@@ -141,7 +124,6 @@ export default {
     onAgree(product) {
       if (this.userFavorites.includes(product.id)) {
         this.$store.dispatch('unfavoriteProduct', product.id)
-        console.log('yes')
       } else {
         this.$store.dispatch('favoriteProduct', product.id)
       }
