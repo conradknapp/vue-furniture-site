@@ -72,6 +72,9 @@ export default {
     },
     onProductLiked() {
       return this.$store.getters.user.favoritedProducts.includes(this.product.id)
+    },
+    allProducts() {
+      return this.$store.getters.allProducts
     }
   },
   methods: {

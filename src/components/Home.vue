@@ -22,6 +22,7 @@
           .b
           .bg.bg2
           .bg.bg3
+          .bg.bg4
           .content
             v-container.slide-in
               v-layout(row wrap v-if="!error")
@@ -135,7 +136,6 @@ export default {
   }
 }
 
-
 // Save your favorites (heart animation)
 
 // Find furniture you love
@@ -201,12 +201,16 @@ export default {
   }
 
   .bg2 {
-    animation-direction:alternate-reverse;
-    animation-duration:4.8s;
+    animation-direction: alternate-reverse;
+    animation-duration: 4.8s;
   }
 
   .bg3 {
-    animation-duration:6.2s;
+    animation-duration: 6.2s;
+  }
+
+  .bg4 {
+    animation-duration: 9s;
   }
 
   @keyframes slide {

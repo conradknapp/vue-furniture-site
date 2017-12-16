@@ -8,7 +8,7 @@
       v-flex(xs12)
         h1.text-xs-center Favorited: {{userFavorites.length}}
     v-layout.wrapper
-      v-flex(v-for="product in products" :key="product.title" v-if="userFavorites.includes(product.id)")
+      v-flex(v-for="product in allProducts" :key="product.title" v-if="userFavorites.includes(product.id)")
         v-card(hover)
           v-card-media(style="cursor: pointer;" @click="goToProduct(product.id)" :src="product.imageUrl" height="200px" min-width="100px")
           v-card-text.text-xs-center {{product.title}}
@@ -29,7 +29,7 @@ export default {
     userFavorites() {
       return this.$store.getters.user.favoritedProducts
     },
-    products() {
+    allProducts() {
       return this.$store.getters.allProducts
     }
   },
@@ -40,13 +40,20 @@ export default {
       }
     }
   },
-  created() {
-    this.$store.dispatch('loadAllProducts')
-  },
   methods: {
     goToProduct(id) {
+      this.$store.dispatch('loadProduct', id)
       this.$router.push('/products/' + id)
-     }
+    },
+    //  productIndex(id) {
+    //   let productIndex = this.$store.getters.allProducts.findIndex(el => {
+    //     return el.id === id
+    //   })
+    //   this.$store.dispatch('setProductIndex', productIndex)
+    // }
+  },
+  beforeMount() {
+    this.$store.dispatch('loadAllProducts')
   }
 }
 </script>

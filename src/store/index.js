@@ -16,7 +16,9 @@ export const store = new Vuex.Store({
     productLiked: null,
     oldestKey: ``,
     justSignedIn: null,
-    resultsLog: null
+    resultsLog: null,
+    flag: null,
+    productIndex: null
   },
   mutations: {
     favoriteProduct(state, payload) {
@@ -61,6 +63,9 @@ export const store = new Vuex.Store({
     setLoadedProducts(state, payload) {
       state.loadedProducts.push(...payload)
     },
+    removeProducts(state, payload) {
+      state.loadedProducts = payload
+    },
     setSearchResults(state, payload) {
       state.searchResults = payload
     },
@@ -75,6 +80,12 @@ export const store = new Vuex.Store({
     },
     setAllProducts(state, payload) {
       state.allProducts = payload
+    },
+    setFlag(state, payload) {
+      state.flag = payload
+    },
+    setProductIndex(state, payload) {
+      state.productIndex = payload
     }
   },
   actions: {
@@ -98,7 +109,7 @@ export const store = new Vuex.Store({
               creatorId: obj[key].creatorId
             })
           }
-          commit('setAllProducts', products)
+          commit('setAllProducts', products.reverse())
           commit('setLoading', false)
         })
         .catch(error => {
@@ -106,12 +117,35 @@ export const store = new Vuex.Store({
           console.log(error)
         })
     },
-    loadProducts({commit}) {
+    loadProduct({commit, getters}, payload) {
+      commit('setLoading', true)
+      firebase.database().ref('/products/' + payload)
+        .once('value')
+        .then(data => {
+          const obj = data.val()
+          const key = data.key
+          let product = {id: key, ...obj}
+          let productLoaded = getters.loadedProducts.findIndex((product) => {
+            return product.id === payload
+          }) !== -1
+          console.log(productLoaded)
+          if (!productLoaded) {
+            getters.loadedProducts.push(product)
+          }
+          console.log(getters.loadedProducts)
+          commit('setLoading', false)
+        })
+        .catch(error => {
+          commit('setLoading', false)
+          console.log(error)
+        })
+    },
+    loadProducts({commit}, payload) {
       commit('setLoading', true)
       let oldestKey = ``
       firebase.database().ref('products')
         .orderByKey()
-        .limitToLast(3)
+        .limitToLast(payload)
         .once('value')
         .then(data => {
           const products = []
@@ -161,18 +195,15 @@ export const store = new Vuex.Store({
                 creatorId: obj[key].creatorId
               })
             }
-            
             let slice = products.reverse().slice(1)
             let arrayOfKeys = Object.keys(data.val())
-            // let results = arrayOfKeys
-            //   .map(key => snapshot.val()[key])
-            //   .reverse()
-            //   .slice(1)
-            if (arrayOfKeys.length === 1) {
-              commit('setLoading', false)
-              commit('setResultsLog', 'You have reached the end')
-              return
-            }
+
+            // if (arrayOfKeys.length === 1) {
+            //   commit('setLoading', false)
+            //   commit('setResultsLog', 'You have reached the end')
+            //   return
+            // }
+            console.log(arrayOfKeys[0])
             commit('setOldestKey', arrayOfKeys[0])
             commit('setLoadedProducts', slice)
             commit('setLoading', false) 
@@ -180,24 +211,24 @@ export const store = new Vuex.Store({
     },
     searchProduct({commit}, payload) {
       firebase.database().ref('products').orderByValue().on('value', snapshot => {
-            let keysArray = snapshot.val()
-            let arr = []
-            for (let key in keysArray) {
-              arr.push({
-                id: key,
-                title: keysArray[key].title,
-                description: keysArray[key].description,
-                imageUrl: keysArray[key].imageUrl
-              })
+        let keysArray = snapshot.val()
+        let arr = []
+        for (let key in keysArray) {
+          arr.push({
+            id: key,
+            title: keysArray[key].title,
+            description: keysArray[key].description,
+            imageUrl: keysArray[key].imageUrl
+          })
+        }
+          let results = arr.filter(el => {
+            let regex = new RegExp(payload, 'gi')
+            if (el.title.match(regex) || el.description.match(regex)) {
+              return el
             }
-              let results = arr.filter(el => {
-                let regex = new RegExp(payload, 'gi')
-                if (el.title.match(regex) || el.description.match(regex)) {
-                  return el
-                }
-              })
-              console.log(results)
-              commit('setSearchResults', results)
+          })
+          console.log(results)
+          commit('setSearchResults', results)
       })
     },
     favoriteProduct({commit, getters}, payload) {
@@ -351,6 +382,15 @@ export const store = new Vuex.Store({
     },
     unAuthUserClick({commit}, payload) {
       commit('setError', payload)
+    },
+    setFlag({commit}, payload) {
+      commit('setFlag', payload)
+    },
+    removeProducts({commit, getters}, payload) {
+      commit('removeProducts', [])
+    },
+    setProductIndex({commit}, payload) {
+      commit('setProductIndex', payload)
     }
   },
   getters: {
@@ -400,6 +440,12 @@ export const store = new Vuex.Store({
     },
     allProducts(state) {
       return state.allProducts
+    },
+    flag(state) {
+      return state.flag
+    },
+    productIndex(state) {
+      return state.productIndex
     }
   }
 })

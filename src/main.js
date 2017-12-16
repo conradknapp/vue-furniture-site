@@ -39,6 +39,5 @@ new Vue({
         this.$store.dispatch('fetchUserData')
       }
     })
-    this.$store.dispatch('loadProducts')
   }
 })

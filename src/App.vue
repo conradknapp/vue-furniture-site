@@ -10,7 +10,7 @@
           v-list-tile-action
             v-icon exit_to_app
           v-list-tile-content Logout
-    v-toolbar(fixed class="deep-purple darken-2" dark)
+    v-toolbar(fixed class="deep-purple darken-2" dark)#toolbar
       v-toolbar-side-icon(@click.native.stop="sideNav = !sideNav" class="hidden-md-and-up")
       v-toolbar-title#main-title 
         router-link(to="/" tag="span" style="cursor: pointer") MCM & More
@@ -23,9 +23,13 @@
             v-list-tile-action(v-if="userIsAuthenticated && userFavorites.includes(result.id)") 
               v-icon favorite
       v-toolbar-items(@mouseenter="showFave = true" @mouseleave="showFave = false").hidden-sm-and-down
-        v-btn(flat :to="item.link" v-for="item in menuItems" :key="item.title") 
-            v-icon(left) {{item.icon}}
-            | {{item.title}}
+        //- v-btn(flat :to="item.link" v-for="item in menuItems" :key="item.title") 
+        //-   span(@click="reload")#click
+        //-   v-icon(left) {{item.icon}}
+        //-   | {{item.title}}
+        v-btn(flat router @click="reload" v-if="userIsAuthenticated")
+          v-icon(left) weekend
+          | Products
         v-btn(flat router to='/profile' v-if="userIsAuthenticated")
           v-badge(color="blue")
             span(slot="badge" v-if="badgeNumber") {{badgeNumber}}
@@ -35,7 +39,7 @@
           v-flex
             v-card(v-if="showFave && userIsAuthenticated")#profile-card
               v-list(three-line).mt-2
-                v-list-tile.ml-1.mb-3(v-if="showFave && userFavorites.includes(product.id)" v-for="product in allProducts" :key="product.title")
+                v-list-tile.ml-1.mb-3(v-if="showFave && userFavorites.includes(product.id)" v-for="product in products" :key="product.title")
                   v-list-tile-content(@click="goToProduct(product.id)").imgContainer
                     img(:src="product.imageUrl").faveImg
         v-btn(flat v-if="userIsAuthenticated" @click="onLogout")
@@ -44,7 +48,6 @@
     main
       router-view
 </template>
-
 
 <script>
   export default {
@@ -94,10 +97,9 @@
         // need to return the most recent five (slice(0,5) and sorted by date they were favorited)
         return this.$store.getters.user.favoritedProducts.slice(0,5)
       },
-      allProducts() {
-        // this.$store.dispatch('loadAllProducts')
-        return this.$store.getters.allProducts
-      }
+      products() {
+        return this.$store.getters.loadedProducts
+      },
     },
     methods: {
       onLogout() {
@@ -108,15 +110,34 @@
       },
       goToProduct(id) {
         this.$router.push('/products/' + id)
+      },
+      reload() {
+        // this.$store.dispatch('setFlag', true)
+        this.$store.dispatch('removeProducts', [])
+        this.$store.dispatch('loadProducts', 3)
+        setTimeout(() => {
+          this.$router.push('/products')
+        }, 500)
       }
     },
-    beforeMount() {
-      this.$store.dispatch('loadAllProducts')
+    created() {
+      this.$store.dispatch('loadProducts', 3)
     }
   }
 </script>
 
 <style>
+  #products {
+    z-index: 5;
+  }
+
+  #toolbar {
+    opacity: 0.92;
+  }
+
+  #toolbar:hover {
+    opacity: 1;
+  }
 
   .profile {
     transform: translateX(-13px);
@@ -159,6 +180,7 @@
   }
 
   #app {
-    background-color: #ddccff;
+    /* background-color: #ddccff; */
+    background-image: linear-gradient(rgba(135, 60, 255, 0.2), rgba(135, 60, 255, 0.0) 80%), linear-gradient(-45deg, rgb(221,200,255) 25%, rgba(255, 208, 65, 0.8) 75%);
   }
 </style>

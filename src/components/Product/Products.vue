@@ -1,5 +1,4 @@
 <template lang="pug">
-  //- add debounce function to infinite scroll
   v-container(grey lighten-2 fluid grid-list-md).pt-5.mt-5
     v-layout(row wrap v-if='!loading').hidden-xs-only
       v-flex(xs12)
@@ -12,9 +11,9 @@
           v-btn(icon slot="activator" @click="flag = true")
             v-icon(:color="flag === true ? 'purple' : ''") view_quilt
     v-layout(row wrap)
-      v-flex(d-flex v-bind="{ [`xs${flag ? product.flex : 12}`]: true }" v-for="product in products" :key="product.title" hover @mouseenter="revealDescription(product)" @mouseleave="description = false")
-        v-card.mt-3.ml-1.mb-2.mr-2(hover)
-          v-card-media(:src="product.imageUrl" :key="product.id" @click="goToProduct(product.id)" tag="button" :height="height")
+      v-flex(d-flex v-bind="{ [`xs${flag ? product.flex : 12}`]: true }" v-for="product in products" :key="product.id" hover @mouseenter="revealDescription(product)" @mouseleave="description = false")
+        v-card.mt-3.ml-1.mr-2(hover)
+          v-card-media(lazy :src="product.imageUrl" :key="product.id" @click="goToProduct(product.id)" tag="button" :height="height")
             v-container(fill-height fluid)
               v-layout(fill-height)
                 v-flex(xs12 align-end flexbox)
@@ -30,27 +29,29 @@
       v-flex#btn-container
         v-btn(color="grey darken-2" @click="backToTop" absolute dark fixed bottom fab)#btn
           v-icon navigation
-    v-layout
+    v-layout.pb-2
       v-flex(xs12).text-xs-center
-        v-progress-circular(indeterminate color="orange darken-3" :width="7" :size="70" height="200px" v-if="loading")
-    v-layout(v-if="!loading && resultsLog")
-      v-flex(xs12).text-xs-center
-        h1 {{resultsLog}}
-          v-icon.ml-3(large right) sentiment_very_dissatisfied
-
+        v-progress-circular(indeterminate color="orange darken-3" :width="7" :size="70" v-if="loading")
+    //- v-layout(v-if="!loading && resultsLog")
+    //-   v-flex(xs12).text-xs-center
+    //-     h1 {{resultsLog}}
+    //-       v-icon.ml-3(large right) sentiment_very_dissatisfied
 </template>
 
 <script>
+import _ from 'lodash'
+
 export default {
   data() {
     return {
       scrollY: '',
-      flag: true,
+      flag: false,
       pageUpButton: false,
       description: '',
       mouseEnterHeart: false,
       unAuthFave: false,
-      row: null
+      row: null,
+      bottom: false
     }
   },
   computed: {
@@ -59,7 +60,8 @@ export default {
       else return '250px'
     },
     products() {
-      return this.$store.getters.getProductsWithFlexProperty
+      return [...new Set(this.$store.getters.getProductsWithFlexProperty)]
+      // return _.uniq(this.$store.getters.loadedProducts)
     },
     loading() {
       return this.$store.getters.loading
@@ -84,6 +86,11 @@ export default {
       return this.$store.getters.resultsLog
     }
   },
+  watch: {
+    bottom(bottom) {
+      if (bottom) this.$store.dispatch('infiniteScroll')
+    }
+  },
   created() {
       window.addEventListener('scroll', () => {
         this.scrollY = scrollY
@@ -93,10 +100,10 @@ export default {
           this.pageUpButton = false
         }
       })
-      window.addEventListener('scroll', this.onPageBottom)
-  },
-  destroyed() {
-    window.removeEventListener('scroll', this.onPageBottom);
+      window.addEventListener('scroll', () => {
+        this.bottom = this.bottomVisible()
+      })
+      this.$store.dispatch('infiniteScroll')
   },
   methods: {
     backToTop() {
@@ -107,14 +114,16 @@ export default {
       this.$router.push('/products/' + id)
       }
     },
-    onPageBottom() {
-      if (window.scrollY === document.body.scrollHeight - window.innerHeight && !this.resultsLog) {
-        setTimeout(() => this.$store.dispatch('infiniteScroll'), 50)
-      }
+    bottomVisible() {
+      const scrollY = window.scrollY
+      const visible = document.documentElement.clientHeight
+      const pageHeight = document.documentElement.scrollHeight
+      const bottomOfPage = visible + scrollY >= pageHeight
+      return bottomOfPage || pageHeight < visible
     },
     revealDescription(product) {
-        if (this.products.find(el => el.id === product.id))
-         this.description = product.description
+      if (this.products.find(el => el.id === product.id))
+        this.description = product.description
     },
     onUnAuthFave() {
       this.unAuthFave = true
@@ -129,7 +138,7 @@ export default {
       }
     }
   }
- }
+}
 </script>
 
 <style>
@@ -217,29 +226,5 @@ export default {
     opacity: 1;
     transform: scale(1) translate(0px, -30px);
   }
-}
-
-.btn-1 {
-  background-image: linear-gradient(270deg, #0D8691 0%, #209DAB 100%);
-}
-
-.btn-2 {
-  background-image: linear-gradient(270deg, #0D86AB 0%, #0D8691 100%);
-}
-
-.btn-3 {
-  background-image: linear-gradient(270deg, #056582 0%, #0D86AB 100%)
-}
-
-.btn-4 {
-  background-image: linear-gradient(270deg, #05799C 0%, #056582 100%);
-}
-
-.btn-5 {
-  background-image: linear-gradient(270deg, #03536B 0%, #05799C 100%);
-}
-
-.btn-6 {
-  background-image: linear-gradient(270deg, #02384D 0%, #03536B 100%);
 }
 </style>
