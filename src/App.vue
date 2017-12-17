@@ -18,8 +18,8 @@
       v-text-field(@blur="searchInput = ''" flex color="pink lighten-1" width="300px" prepend-icon="search" placeholder="Search any style" v-model="searchInput" @input="onSearch" single-line hide-details).ml-4.mr-2
       v-card(dark v-if="onSearchResults")#card
         v-list
-          v-list-tile(@click="searchInput = ''" :to="'/products/' + result.id" v-for="result in onSearchResults" :key="result.title")
-            v-list-tile-title {{result.title}} | {{result.description.slice(0,50)}}...
+          v-list-tile(@click="goToResult(result.id)" v-for="result in onSearchResults" :key="result.title")
+            v-list-tile-title(v-html="`${result.title} | ${result.description.slice(0, 75)}...`") 
             v-list-tile-action(v-if="userIsAuthenticated && userFavorites.includes(result.id)") 
               v-icon favorite
       v-toolbar-items(@mouseenter="showFave = true" @mouseleave="showFave = false").hidden-sm-and-down
@@ -55,7 +55,8 @@
       return {
         sideNav: false,
         searchInput: '',
-        showFave: false
+        showFave: false,
+        something: ''
       }
     },
     computed: {
@@ -89,8 +90,21 @@
       onSearchResults() {
         if (this.searchInput === '') {
           return
+        } else if (!this.$store.getters.searchResults.length) {
+          return [{title: `No results for ${this.searchInput}`, description: ``}]
         } else {
-          return this.$store.getters.searchResults.slice(0,5)
+          return this.$store.getters.searchResults.map(el => {
+            let regex = new RegExp(this.searchInput, 'gi');
+            let newTitle = el.title.replace(regex, `<span class="hl">${this.searchInput}</span>`);
+            let newDesc = el.description.replace(regex, `<span class="hl">${this.searchInput}</span>`);
+            return {
+              title: newTitle,
+              description: newDesc,
+              imageUrl: el.imageUrl,
+              id: el.id
+            }
+          }).slice(0, 5)
+          // return this.$store.getters.searchResults.slice(0, 5);
         }
       },
       userFavorites() {
@@ -118,7 +132,11 @@
         setTimeout(() => {
           this.$router.push('/products')
         }, 500)
-      }
+      },
+      goToResult(id) {
+        this.$store.dispatch('loadProduct', id)
+        this.$router.push('/products/' + id)
+      },
     },
     created() {
       this.$store.dispatch('loadProducts', 3)
@@ -141,6 +159,10 @@
 
   .profile {
     transform: translateX(-13px);
+  }
+
+  .hl {
+    color:#ffc600;
   }
  
   .imgContainer {

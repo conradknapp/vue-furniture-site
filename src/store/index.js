@@ -140,7 +140,7 @@ export const store = new Vuex.Store({
           console.log(error)
         })
     },
-    loadProducts({commit}, payload) {
+    loadProducts({commit}, payload = 5) {
       commit('setLoading', true)
       let oldestKey = ``
       firebase.database().ref('products')
@@ -227,7 +227,7 @@ export const store = new Vuex.Store({
               return el
             }
           })
-          console.log(results)
+          // console.log(results)
           commit('setSearchResults', results)
       })
     },
