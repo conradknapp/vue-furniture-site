@@ -18,15 +18,18 @@ export const store = new Vuex.Store({
     justSignedIn: null,
     resultsLog: null,
     flag: null,
-    productIndex: null
+    productIndex: null,
+    lastKeys: []
   },
   mutations: {
     favoriteProduct(state, payload) {
       const id = payload.id
+      const time = payload.timeFavorited
       if (state.user.favoritedProducts.findIndex(product => product.id === id) >= 0) {
         return
       }
       state.user.favoritedProducts.push(id)
+      console.log(state.user.favoritedProducts)
       state.user.fbKeys[id] = payload.fbKey
     },
     unfavoriteProduct(state, payload) {
@@ -86,6 +89,9 @@ export const store = new Vuex.Store({
     },
     setProductIndex(state, payload) {
       state.productIndex = payload
+    },
+    setLastKeys(state, payload) {
+      state.lastKeys = payload
     }
   },
   actions: {
@@ -140,7 +146,7 @@ export const store = new Vuex.Store({
           console.log(error)
         })
     },
-    loadProducts({commit}, payload = 5) {
+    loadProducts({commit}, payload = 3) {
       commit('setLoading', true)
       let oldestKey = ``
       firebase.database().ref('products')
@@ -162,7 +168,7 @@ export const store = new Vuex.Store({
               creatorId: obj[key].creatorId
             })
           }
-          let arrayOfKeys = Object.keys(data.val())
+          let arrayOfKeys = Object.keys(obj)
           oldestKey = arrayOfKeys[0]
           commit('setLoadedProducts', products.reverse())
           commit('setOldestKey', oldestKey)
@@ -196,14 +202,23 @@ export const store = new Vuex.Store({
               })
             }
             let slice = products.reverse().slice(1)
-            let arrayOfKeys = Object.keys(data.val())
+            let arrayOfKeys = Object.keys(obj)
 
             // if (arrayOfKeys.length === 1) {
             //   commit('setLoading', false)
             //   commit('setResultsLog', 'You have reached the end')
             //   return
             // }
-            console.log(arrayOfKeys[0])
+            console.log(arrayOfKeys[0]);
+            getters.lastKeys.push(arrayOfKeys[0]);
+            getters.lastKeys.splice(-3, getters.lastKeys.length - 2); 
+            if (getters.lastKeys[getters.lastKeys.length - 1] === getters.lastKeys[getters.lastKeys.length - 2]) {
+              commit('setLoading', false)
+              commit('setResultsLog', true)
+              commit('setLastKeys', [])
+              return
+            }
+            console.log(getters.lastKeys);
             commit('setOldestKey', arrayOfKeys[0])
             commit('setLoadedProducts', slice)
             commit('setLoading', false) 
@@ -238,7 +253,7 @@ export const store = new Vuex.Store({
         .child('/favorites/')
         .push(payload)
         .then(data => {
-          commit('favoriteProduct', {id: payload, fbKey: data.key})
+          commit('favoriteProduct', {id: payload, timeFavorited: new Date(), fbKey: data.key})
           setTimeout(() => commit('setHeartLoading', false), 1200)
           commit('setLoading', false)
         })
@@ -391,13 +406,18 @@ export const store = new Vuex.Store({
     },
     setProductIndex({commit}, payload) {
       commit('setProductIndex', payload)
+    },
+    setResultsLog({commit}, payload) {
+      commit('setResultsLog', payload)
     }
   },
   getters: {
     loadedProducts(state) {
-      return state.loadedProducts.sort((productA, productB) => {
+      let loadedProducts = state.loadedProducts
+      loadedProducts.sort((productA, productB) => {
         return productA.date < productB.date
       })
+      return loadedProducts
     },
     loadedProduct(state) {
       return (productId) => {
@@ -412,8 +432,11 @@ export const store = new Vuex.Store({
     getProductsWithFlexProperty(state, getters) {
       let loadedProducts = getters.loadedProducts
       loadedProducts.forEach((el, i) => {
-        if (i % 3) el['flex'] = 6
-        else el['flex'] = 12
+        if (i % 3) {
+          el['flex'] = 6
+        } else {
+          el['flex'] = 12
+        }
       });
       return loadedProducts
     },
@@ -446,6 +469,9 @@ export const store = new Vuex.Store({
     },
     productIndex(state) {
       return state.productIndex
+    },
+    lastKeys(state) {
+      return state.lastKeys
     }
   }
 })

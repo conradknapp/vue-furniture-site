@@ -11,14 +11,14 @@
           v-btn(icon slot="activator" @click="flag = true")
             v-icon(:color="flag === true ? 'purple' : ''") view_quilt
     v-layout(row wrap)
-      v-flex(d-flex v-bind="{ [`xs${flag ? product.flex : 12}`]: true }" v-for="product in products" :key="product.id" hover @mouseenter="revealDescription(product)" @mouseleave="description = false")
+      v-flex(d-flex v-bind="{ [`xs${flag ? product.flex : 6}`]: true }" v-for="product in products" :key="product.id" hover @mouseenter="revealDescription(product)" @mouseleave="description = false")
         v-card.mt-3.ml-1.mr-2(hover)
           v-card-media(lazy :src="product.imageUrl" :key="product.id" @click="goToProduct(product.id)" tag="button" :height="height")
             v-container(fill-height fluid)
               v-layout(fill-height)
                 v-flex(xs12 align-end flexbox)
                   span(v-text="product.title")#title.hidden-xs-only.headline
-                  span(v-if="product.description === description" v-text="description")#description
+                  span(v-if="product.description === description" v-text="description.match(/^[^.]+/)[0]")#description
                   div#favorite
                     v-btn(icon large v-if="userIsAuthenticated" @mouseenter="mouseEnterHeart = true" @mouseleave="mouseEnterHeart = false" @click="onAgree(product)")
                       v-icon(color="red darken-4" x-large v-if="userFavorites.includes(product.id)") favorite
@@ -27,15 +27,19 @@
                       v-icon(color="red darken-4" x-large) favorite_border
     v-layout(v-if="pageUpButton")
       v-flex#btn-container
-        v-btn(color="grey darken-2" @click="backToTop" absolute dark fixed bottom fab)#btn
-          v-icon navigation
+        v-btn(color="grey darken-2" @mouseenter="iconSwitch = false" @mouseleave="iconSwitch = true" @click="backToTop" absolute dark fixed bottom fab)#btn
+          v-icon(v-if="iconSwitch") navigation
+          span(v-else)#span
+            p back
+            p To
+            p top
     v-layout.pb-2
       v-flex(xs12).text-xs-center
         v-progress-circular(indeterminate color="orange darken-3" :width="7" :size="70" v-if="loading")
-    //- v-layout(v-if="!loading && resultsLog")
-    //-   v-flex(xs12).text-xs-center
-    //-     h1 {{resultsLog}}
-    //-       v-icon.ml-3(large right) sentiment_very_dissatisfied
+    v-layout(v-if="!loading && resultsLog")
+      v-flex(xs12).text-xs-center
+        h1 You have reached the end
+          v-icon.ml-3(large right) sentiment_very_dissatisfied
 </template>
 
 <script>
@@ -51,13 +55,17 @@ export default {
       mouseEnterHeart: false,
       unAuthFave: false,
       row: null,
-      bottom: false
+      bottom: false,
+      iconSwitch: true
     }
   },
   computed: {
     height() {
-      if (this.flex === 12) return '300px'
-      else return '250px'
+      if (this.flex === 12) {
+        return '300px'
+      } else {
+        return '250px'
+      }
     },
     products() {
       return [...new Set(this.$store.getters.getProductsWithFlexProperty)]
@@ -88,7 +96,11 @@ export default {
   },
   watch: {
     bottom(bottom) {
-      if (bottom) this.$store.dispatch('infiniteScroll')
+      if (bottom && !this.resultsLog) {
+        const func = _.debounce(this.infiniteScroll, 150)
+        func()
+        // this.infiniteScroll()
+      }
     }
   },
   created() {
@@ -103,9 +115,13 @@ export default {
       window.addEventListener('scroll', () => {
         this.bottom = this.bottomVisible()
       })
-      this.$store.dispatch('infiniteScroll')
+      // this.$store.dispatch('infiniteScroll')
+      this.$store.dispatch('setResultsLog', false)
   },
   methods: {
+    infiniteScroll() {
+      this.$store.dispatch('infiniteScroll')
+    },
     backToTop() {
       window.scroll({top: 0, left: 0, behavior: 'smooth' })
     },
@@ -122,8 +138,9 @@ export default {
       return bottomOfPage || pageHeight < visible
     },
     revealDescription(product) {
-      if (this.products.find(el => el.id === product.id))
+      if (this.products.find(el => el.id === product.id)) {
         this.description = product.description
+      }
     },
     onUnAuthFave() {
       this.unAuthFave = true
@@ -151,6 +168,12 @@ export default {
     color: white;
     overflow: hidden;
     background: rgba(0,0,0,0.3);
+  }
+
+  #span > * {
+    margin-top: 15px;
+    line-height: 0;
+    font-size: 15px;
   }
 
   #title:hover {
@@ -204,6 +227,11 @@ export default {
     align-self: flex-end;
     transform: translate(0px, -30px);
     animation: buttonReveal 0.5s cubic-bezier(.25,.8,.5,1);
+  }
+
+  #btn:hover {
+    transform: translate(0px, -30px) scale(1.1);
+    transition-timing-function: 1s;
   }
 
   .gradient-btn {

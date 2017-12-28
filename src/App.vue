@@ -27,8 +27,8 @@
         //-   span(@click="reload")#click
         //-   v-icon(left) {{item.icon}}
         //-   | {{item.title}}
-        v-btn(flat router @click="reload" v-if="userIsAuthenticated")
-          v-icon(left) weekend
+        v-btn(flat router @click="reload")
+          v-icon(left).hidden-sm-only weekend
           | Products
         v-btn(flat router to='/profile' v-if="userIsAuthenticated")
           v-badge(color="blue")
@@ -39,7 +39,7 @@
           v-flex
             v-card(v-if="showFave && userIsAuthenticated")#profile-card
               v-list(three-line).mt-2
-                v-list-tile.ml-1.mb-3(v-if="showFave && userFavorites.includes(product.id)" v-for="product in products" :key="product.title")
+                v-list-tile.ml-1.mb-3(v-if="showFave && userFavorites.includes(product.id)" v-for="product in allProducts" :key="product.title")
                   v-list-tile-content(@click="goToProduct(product.id)").imgContainer
                     img(:src="product.imageUrl").faveImg
         v-btn(flat v-if="userIsAuthenticated" @click="onLogout")
@@ -109,11 +109,15 @@
       },
       userFavorites() {
         // need to return the most recent five (slice(0,5) and sorted by date they were favorited)
-        return this.$store.getters.user.favoritedProducts.slice(0,5)
+        let faveCopy = [...this.$store.getters.user.favoritedProducts]
+        return faveCopy.slice(-5)
       },
       products() {
         return this.$store.getters.loadedProducts
       },
+      allProducts() {
+      return this.$store.getters.allProducts
+      }
     },
     methods: {
       onLogout() {
@@ -125,14 +129,13 @@
       goToProduct(id) {
         this.$router.push('/products/' + id)
       },
-      reload() {
+      async reload() {
         // this.$store.dispatch('setFlag', true)
+        this.$store.dispatch('setResultsLog', false)
         this.$store.dispatch('removeProducts', [])
-        this.$store.dispatch('loadProducts', 3)
-        setTimeout(() => {
-          this.$router.push('/products')
-        }, 500)
-      },
+        await this.$store.dispatch('loadProducts', 3);
+        await this.$router.push('/products')
+     },
       goToResult(id) {
         this.$store.dispatch('loadProduct', id)
         this.$router.push('/products/' + id)

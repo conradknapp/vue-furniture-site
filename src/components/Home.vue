@@ -5,7 +5,7 @@
           app-alert(@dismissed="onDismissed" :icon="error.icon" :color="error.color" :submessage="error.submessage" :text="error.message")#app-alert
       v-layout(row wrap v-if="!loading")
         v-flex(xs12 class="text-xs-center")
-          v-btn(large transition router dark to="/products")#home-gradient-button See All Products
+          v-btn(large transition @click="reload")#home-gradient-button See All Products
       v-layout
         v-flex(xs12).text-xs-center
           v-progress-circular(indeterminate color="purple" :width="7" :size="70" v-if="loading")
@@ -121,6 +121,12 @@ export default {
     onSignup() {
       this.$store.dispatch('signUserUp', {email: this.email, password: this.password})
     },
+    async reload() {
+        // this.$store.dispatch('setFlag', true)
+        this.$store.dispatch('removeProducts', [])
+        await this.$store.dispatch('loadProducts', 3);
+        await this.$router.push('/products')
+     },
     checkSlide(e) {
       const slidingForm = document.querySelector(".slide-in");
       const slideInAt = (scrollY + innerHeight) - (slidingForm.offsetHeight / 2);
@@ -135,7 +141,6 @@ export default {
     }
   }
 }
-
 // Save your favorites (heart animation)
 
 // Find furniture you love
@@ -197,7 +202,7 @@ export default {
     right: -50%;
     top: 100%;
     z-index: 1;
-    height: 90vh;
+    height: 600px;
   }
 
   .bg2 {
@@ -225,7 +230,7 @@ export default {
   .content {
     width: 100%;
     top: 100%;
-    margin-top: 100px;
+    margin-top: 5rem;
     left: 0;
     right: 0;
     bottom: 0;
@@ -261,5 +266,6 @@ export default {
   .slide-in.active {
     opacity: 1;
     transform: translateX(0%) scale(1);
+  
   }
 </style>
