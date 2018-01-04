@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-container.pt-5
+  v-container(fill-height).mt-5
     v-layout(row wrap v-if="loading")
       v-flex(xs12).text-xs-center
         v-progress-circular(indeterminate color="purple" :width="7" :size="70" v-if="loading")
@@ -16,7 +16,7 @@
               app-edit-product-details-dialog(:product="product")
           v-tooltip(right)
             span Click to enlarge image
-            v-card-media(slot="activator" @click="togglePictureDialog" :src="product.imageUrl" height="300px")
+            v-card-media(slot="activator" @click="togglePictureDialog" :src="product.imageUrl" style='height: 200px; width: 100%; object-fit: contain')#media
               v-container(fill-height fluid)
                 v-layout(fill-height)
                   v-flex(xs12 align-end flexbox)
@@ -25,7 +25,7 @@
                       heart-flutter(v-if="heartLoading && !dontShow")#heart-flutter
                       v-btn(icon large v-if="userIsAuthenticated && !userIsCreator" @mouseenter="mouseEnterHeart = true" @mouseleave="mouseEnterHeart = false" @click="onAgree")
                         v-icon(color="red darken-4" x-large v-if="onProductLiked") favorite
-                        v-icon(color="red darken-4" x-large v-else) favorite_border
+                        v-icon(color="white" x-large v-else) favorite
                       v-btn(icon large v-if="!userIsAuthenticated" @click="onUnAuthFave")
                         v-icon(x-large color="red darken-4") favorite_border
           v-dialog(v-model="dialog")
@@ -98,7 +98,7 @@ export default {
       }
       this.unAuthFave = true
       setTimeout(() => this.$router.push('/signup'), 1000)
-      setTimeout(() => this.$store.dispatch('unAuthUserClick', {message: `Sign up to save all your favorites`, submessage: `(it only takes a second)`, icon: 'info', color: "info"}), 1500)
+      setTimeout(() => this.$store.dispatch('unAuthUserClick', {message: `Sign up to save all your favorites 💖`, submessage: `(it only takes a second ⏱)`, icon: 'info', color: "info"}), 1500)
     },
     togglePictureDialog() {
       if (window.innerWidth > 500 && !this.unAuthFave && !this.mouseEnterHeart) {
@@ -158,5 +158,35 @@ export default {
 
   h3 {
     font-weight: 100;
+  }
+
+  @media screen and (min-width: 350px) {
+    #media {
+      height: 180px !important;
+    }
+  }
+
+  @media screen and (min-width: 400px) {
+    #media {
+      height: 230px !important;
+    }
+  }
+
+  @media screen and (min-width: 550px) {
+    #media {
+      height: 300px !important;
+    }
+  }
+
+  @media screen and (min-width: 630px) {
+    #media {
+      height: 400px !important;
+    }
+  }
+
+  @media screen and (min-width: 800px) {
+    #media {
+      height: 500px !important;
+    }
   }
 </style>

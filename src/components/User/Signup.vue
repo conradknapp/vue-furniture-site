@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-container
+  v-container.mt-5
     v-layout(row wrap v-if="!error")
       v-flex(xs12 sm6 offset-sm3).text-xs-center
         h1 Get started here
@@ -14,18 +14,20 @@
               form(@submit.prevent="onSignup")
                 v-layout(row)
                   v-flex(xs12)
-                    v-text-field(name="email" label="Email" id="email" v-model="email" type="email" required)
+                    v-text-field(name="email" label="Email" id="email" v-model="email" type="email" prepend-icon="email" required)
                 v-layout(row)
                   v-flex(xs12)
-                    v-text-field(name="password" label="Password" id="password" v-model="password" type="password" required)
+                    v-text-field(name="password" label="Password" id="password" v-model="password" prepend-icon="extension" type="password" required)
                 v-layout(row)
                   v-flex(xs12)
-                    v-text-field(name="confirmPassword" label="Confirm Password" id="confirmPassword" v-model="confirmPassword" type="password" :rules="[comparePasswords]" required)
+                    v-text-field(name="confirmPassword" label="Confirm Password" id="confirmPassword" v-model="confirmPassword" type="password" prepend-icon="gavel" :rules="[comparePasswords]" required)
                 v-layout(row).text-xs-center
                   v-flex(xs12)
                     v-btn(color="blue" dark type="submit" :disabled='loading' :loading="loading") Sign Up
                       span(slot="loader").custom-loader
                         v-icon(light) cached
+                    h3 Already have an account? 
+                      router-link(to="/signin") Sign in here
 </template>
 
 <script>

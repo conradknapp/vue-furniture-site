@@ -438,7 +438,7 @@ export const store = new Vuex.Store({
           el['flex'] = 12
         }
       });
-      return loadedProducts
+      return [...new Set(loadedProducts)]
     },
     user(state) {
       return state.user

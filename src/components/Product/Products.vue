@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-container(grey lighten-2 fluid grid-list-md).pt-5.mt-5
+  v-container(grey lighten-2 grid-list-md).pt-5.mt-5
     v-layout(row wrap v-if='!loading').hidden-xs-only
       v-flex(xs12)
         v-tooltip(bottom)
@@ -11,7 +11,7 @@
           v-btn(icon slot="activator" @click="flag = true")
             v-icon(:color="flag === true ? 'purple' : ''") view_quilt
     v-layout(row wrap)
-      v-flex(d-flex v-bind="{ [`xs${flag ? product.flex : 6}`]: true }" v-for="product in products" :key="product.id" hover @mouseenter="revealDescription(product)" @mouseleave="description = false")
+      v-flex(sm6 v-bind="{ [`xs${flag ? product.flex : 12}`]: true }" v-for="product in products" :key="product.id" hover @mouseenter="revealDescription(product)" @mouseleave="description = false")
         v-card.mt-3.ml-1.mr-2(hover)
           v-card-media(lazy :src="product.imageUrl" :key="product.id" @click="goToProduct(product.id)" tag="button" :height="height")
             v-container(fill-height fluid)
@@ -22,16 +22,14 @@
                   div#favorite
                     v-btn(icon large v-if="userIsAuthenticated" @mouseenter="mouseEnterHeart = true" @mouseleave="mouseEnterHeart = false" @click="onAgree(product)")
                       v-icon(color="red darken-4" x-large v-if="userFavorites.includes(product.id)") favorite
-                      v-icon(color="red darken-4" x-large v-else) favorite_border
+                      v-icon(color="white" x-large v-else) favorite
                     v-btn(icon large v-if="!userIsAuthenticated" @click="onUnAuthFave")
-                      v-icon(color="red darken-4" x-large) favorite_border
+                      v-icon(color="white" x-large) favorite
     v-layout(v-if="pageUpButton")
       v-flex#btn-container
         v-btn(color="grey darken-2" @mouseenter="iconSwitch = false" @mouseleave="iconSwitch = true" @click="backToTop" absolute dark fixed bottom fab)#btn
           v-icon(v-if="iconSwitch") navigation
           span(v-else)#span
-            p back
-            p To
             p top
     v-layout.pb-2
       v-flex(xs12).text-xs-center
@@ -61,15 +59,11 @@ export default {
   },
   computed: {
     height() {
-      if (this.flex === 12) {
-        return '300px'
-      } else {
-        return '250px'
-      }
+      return '40vh'
     },
     products() {
-      return [...new Set(this.$store.getters.getProductsWithFlexProperty)]
-      // return _.uniq(this.$store.getters.loadedProducts)
+      // return [...new Set(this.$store.getters.getProductsWithFlexProperty)]
+      return this.$store.getters.getProductsWithFlexProperty
     },
     loading() {
       return this.$store.getters.loading
@@ -97,7 +91,7 @@ export default {
   watch: {
     bottom(bottom) {
       if (bottom && !this.resultsLog) {
-        const func = _.debounce(this.infiniteScroll, 150)
+        const func = _.throttle(this.infiniteScroll, 1000)
         func()
         // this.infiniteScroll()
       }
@@ -145,7 +139,7 @@ export default {
     onUnAuthFave() {
       this.unAuthFave = true
       setTimeout(() => this.$router.push('/signup'), 1000)
-      setTimeout(() => this.$store.dispatch('unAuthUserClick', {message: `Sign up to save all your favorites`, submessage: `(it only takes a second)`, icon: 'info', color: "info"}), 1500)
+      setTimeout(() => this.$store.dispatch('unAuthUserClick', {message: `Sign up to save all your favorites 💖`, submessage: `(it only takes a second ⏱)`, icon: 'info', color: "info"}), 1500)
     },
     onAgree(product) {
       if (this.userFavorites.includes(product.id)) {

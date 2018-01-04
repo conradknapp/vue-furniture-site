@@ -22,25 +22,25 @@
             v-list-tile-title(v-html="`${result.title} | ${result.description.slice(0, 75)}...`") 
             v-list-tile-action(v-if="userIsAuthenticated && userFavorites.includes(result.id)") 
               v-icon favorite
-      v-toolbar-items(@mouseenter="showFave = true" @mouseleave="showFave = false").hidden-sm-and-down
+      v-toolbar-items().hidden-sm-and-down
         //- v-btn(flat :to="item.link" v-for="item in menuItems" :key="item.title") 
         //-   span(@click="reload")#click
-        //-   v-icon(left) {{item.icon}}
+        //-   v-icon(left) {{item.icon}
         //-   | {{item.title}}
-        v-btn(flat router @click="reload")
+        v-btn(flat router @click="reload" )
           v-icon(left).hidden-sm-only weekend
           | Products
-        v-btn(flat router to='/profile' v-if="userIsAuthenticated")
+        v-btn(flat @mouseenter="showFave = true" @mouseleave="showFave = false" @click="goToProfile" v-if="userIsAuthenticated")#profile-btn
           v-badge(color="blue")
             span(slot="badge" v-if="badgeNumber") {{badgeNumber}}
             v-icon(left) account_box
             | Profile
-        v-layout(row wrap @mouseenter="showFave = true" @mouseleave="showFave = false")
+        v-layout
           v-flex
-            v-card(v-if="showFave && userIsAuthenticated")#profile-card
+            v-card(v-if="showFave && userIsAuthenticated" @mouseover="showFave = true" @mouseleave="showFave = false")#profile-card
               v-list(three-line).mt-2
                 v-list-tile.ml-1.mb-3(v-if="showFave && userFavorites.includes(product.id)" v-for="product in allProducts" :key="product.title")
-                  v-list-tile-content(@click="goToProduct(product.id)").imgContainer
+                  v-list-tile-content(@click="goToResult(product.id)").imgContainer
                     img(:src="product.imageUrl").faveImg
         v-btn(flat v-if="userIsAuthenticated" @click="onLogout")
           v-icon(left) exit_to_app
@@ -55,8 +55,9 @@
       return {
         sideNav: false,
         searchInput: '',
-        showFave: false,
-        something: ''
+        showFave: true,
+        something: '',
+        opacityNum: 0
       }
     },
     computed: {
@@ -123,6 +124,9 @@
       onLogout() {
         this.$store.dispatch('logout')
       },
+      goToProfile() {
+        this.$router.push('/profile')
+      },
       onSearch() {
         this.$store.dispatch('searchProduct', this.searchInput)
       },
@@ -150,6 +154,16 @@
 <style>
   #products {
     z-index: 5;
+  }
+
+  #profile-card {
+    position: absolute;
+    overflow: auto;
+    transition: all 0.5s;
+    width: 200px;
+    z-index: 8;
+    top: 100%;
+    transform: translateX(-160px);
   }
 
   #toolbar {
@@ -192,16 +206,6 @@
     width: 100%;
     z-index: 8;
     top: 100%;
-  }
-
-  #profile-card {
-    position: absolute;
-    overflow: auto;
-    transition: all 0.5s;
-    width: 200px;
-    z-index: 8;
-    top: 100%;
-    transform: translateX(-160px)
   }
 
   #app {
