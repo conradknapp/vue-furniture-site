@@ -11,7 +11,7 @@
           v-btn(icon slot="activator" @click="flag = true")
             v-icon(:color="flag === true ? 'purple' : ''") view_quilt
     v-layout(row wrap)
-      v-flex(sm6 v-bind="{ [`xs${flag ? product.flex : 12}`]: true }" v-for="product in products" :key="product.id" hover @mouseenter="revealDescription(product)" @mouseleave="description = false")
+      v-flex(xs12 v-bind="{ [`sm${flag ? product.flex : 6}`]: true }" v-for="product in products" :key="product.id" hover @mouseenter="revealDescription(product)" @mouseleave="description = false")
         v-card.mt-3.ml-1.mr-2(hover)
           v-card-media(lazy :src="product.imageUrl" :key="product.id" @click="goToProduct(product.id)" tag="button" :height="height")
             v-container(fill-height fluid)
@@ -41,8 +41,6 @@
 </template>
 
 <script>
-import _ from 'lodash'
-
 export default {
   data() {
     return {
@@ -201,6 +199,7 @@ export default {
   @keyframes revealDiv {
     0% {
       opacity: 0;
+      transform: translateY(50px);
     }
 
     50% {
@@ -209,6 +208,7 @@ export default {
 
     100% {
       opacity: 1;
+      transform: translateY(0px);
     }
   }
 

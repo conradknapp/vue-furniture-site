@@ -27,7 +27,7 @@
                       span(slot="loader").custom-loader
                         v-icon(light) cached
                     h3 Already have an account? 
-                      router-link(to="/signin") Sign in here
+                      router-link(to="/signin") Sign in
 </template>
 
 <script>

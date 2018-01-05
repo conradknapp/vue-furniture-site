@@ -20,14 +20,14 @@
               v-container(fill-height fluid)
                 v-layout(fill-height)
                   v-flex(xs12 align-end flexbox)
-                    div#favorite-btn
+                    #favorite-btn
                       heart-flutter(v-if="unAuthFave && !dontShow")#heart-flutter
                       heart-flutter(v-if="heartLoading && !dontShow")#heart-flutter
                       v-btn(icon large v-if="userIsAuthenticated && !userIsCreator" @mouseenter="mouseEnterHeart = true" @mouseleave="mouseEnterHeart = false" @click="onAgree")
                         v-icon(color="red darken-4" x-large v-if="onProductLiked") favorite
                         v-icon(color="white" x-large v-else) favorite
                       v-btn(icon large v-if="!userIsAuthenticated" @click="onUnAuthFave")
-                        v-icon(x-large color="red darken-4") favorite_border
+                        v-icon(x-large color="white") favorite
           v-dialog(v-model="dialog")
             v-card
               v-card-media(:src="product.imageUrl" height="500px")

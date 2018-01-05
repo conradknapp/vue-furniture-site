@@ -2,7 +2,7 @@
     v-container(fluid grid-list-md)
       v-layout(row wrap v-if="error && !loading")
         v-flex(xs12)
-          app-alert(@dismissed="onDismissed" :icon="error.icon" :color="error.color" :submessage="error.submessage" :text="error.message")#app-alert
+          app-alert(v-if="!errorContains" @dismissed="onDismissed" :icon="error.icon" :color="error.color" :submessage="error.submessage" :text="error.message")#app-alert
       v-layout(row wrap v-if="!loading")
         v-flex(xs12 class="text-xs-center")
           v-btn(large transition @click="reload")#home-gradient-button See All Products
@@ -98,6 +98,9 @@ export default {
       } else {
         return ''
       }
+    },
+    errorContains() {
+      return this.error.message.includes('Sign up')
     }
   },
   watch: {
@@ -191,7 +194,8 @@ export default {
   }
 
   #app-alert {
-    margin-top: 4rem;
+    margin-top: 5rem;
+    margin-bottom: 0;
   }
 
   #home-gradient-button {

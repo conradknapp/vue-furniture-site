@@ -42,20 +42,20 @@
 
 <style>
   .hide {
-  transition: all .5s;
-  opacity: 0;
-  visibility: hidden;
-  animation: hideMsgAlert 1s;
-}
-
-@keyframes hideMsgAlert {
-  0% {
-    opacity: 1;
-    transform: translateX(-20%);
-  }
-  100% {
+    transition: all .5s;
     opacity: 0;
-    transform: translateX(100%);
+    visibility: hidden;
+    animation: hideMsgAlert 1s;
   }
-}
+
+  @keyframes hideMsgAlert {
+    0% {
+      opacity: 1;
+      transform: translateX(-20%);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+  }
 </style>

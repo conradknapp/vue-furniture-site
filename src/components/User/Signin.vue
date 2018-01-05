@@ -24,7 +24,7 @@
                       span(slot="loader").custom-loader
                         v-icon(light) cached
                     h3 Don't have an account? 
-                      router-link(to="/signup") Sign up here
+                      router-link(to="/signup") Sign up
 </template>
 
 <script>
