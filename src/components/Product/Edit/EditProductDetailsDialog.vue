@@ -11,8 +11,8 @@
         v-layout(row wrap)
           v-flex(xs12)
             v-card-text
-              v-text-field(name="title" label="Title" id="title" v-model="editedTitle" required)
-              v-text-field(name="description" label="Description" id="description" v-model="editedDescription" multi-line required)
+              v-text-field(name="title" label="Title" v-model="editedTitle" required)
+              v-text-field(name="description" label="Description"  v-model="editedDescription" multi-line required)
         v-layout(row wrap)
           v-flex(xs12)
             v-card-actions

@@ -133,7 +133,6 @@ export default {
       this.$store.dispatch('signUserUp', {email: this.email, password: this.password})
     },
     async reload() {
-        // this.$store.dispatch('setFlag', true)
         this.$store.dispatch('removeProducts', [])
         await this.$store.dispatch('loadProducts', 3);
         await this.$router.push('/products')
@@ -141,7 +140,7 @@ export default {
     checkSlide(e) {
       const slidingForm = document.querySelector(".slide-in");
       const slideInAt = (scrollY + innerHeight) - (slidingForm.offsetHeight / 2);
-      const formBottom = slidingForm.offsetTop + slidingForm.offsetHeight + 1250;
+      const formBottom = slidingForm.offsetTop + slidingForm.offsetHeight + 1350;
       const half = slideInAt > slidingForm.offsetTop;
       const notScrolledPast = window.scrollY < formBottom ;
       if (half && notScrolledPast) {
@@ -157,40 +156,31 @@ export default {
     }, 10000)
   }
 }
-// Save your favorites (heart animation)
-
-// Find furniture you love
-
-// Beautify your home (home animation)
 </script>
 
 <style>
   #hero-arrow-one {
-   background-image: linear-gradient(
-     to right bottom, rgba(145, 133, 250, 0.3),
-     rgba(136, 7, 125, 0.7)),
-   url(https://images.duckduckgo.com/iu/?u=http%3A%2F%2F2.bp.blogspot.com%2F-Evv3t00urQE%2FUVjmycn_Q3I%2FAAAAAAAAADA%2F-lZM0xo9hxA%2Fs1600%2FMid%2BCentury%2BFurniture%2B008.JPG&f=1);
-   background-position: top;
-   background-size: cover;
-   height: 80vh;
-   position: relative;
-   /* position: absolute; */
-   /* clip-path: polygon(100% 0, 100% 79%, 100% 95%, 0% 100%, 0 48%, 0 0); */
-   clip-path: polygon(80% 0%, 100% 50%, 80% 100%, 0% 100%, 15% 50%, 0% 0%);
+    background-image: linear-gradient(
+      to right bottom, rgba(145, 133, 250, 0.3),
+      rgba(136, 7, 125, 0.7)),
+    url(https://images.duckduckgo.com/iu/?u=http%3A%2F%2F2.bp.blogspot.com%2F-Evv3t00urQE%2FUVjmycn_Q3I%2FAAAAAAAAADA%2F-lZM0xo9hxA%2Fs1600%2FMid%2BCentury%2BFurniture%2B008.JPG&f=1);
+    background-position: top;
+    background-size: cover;
+    height: 80vh;
+    position: relative;
+    clip-path: polygon(80% 0%, 100% 50%, 80% 100%, 0% 100%, 15% 50%, 0% 0%);
   }
 
   #hero-arrow-two {
     background-image: linear-gradient(
-     to right bottom, rgba(145, 133, 250, 0.3),
-     rgba(136, 7, 125, 0.7)),
-   url(https://images.duckduckgo.com/iu/?u=http%3A%2F%2F2.bp.blogspot.com%2F-Evv3t00urQE%2FUVjmycn_Q3I%2FAAAAAAAAADA%2F-lZM0xo9hxA%2Fs1600%2FMid%2BCentury%2BFurniture%2B008.JPG&f=1);
-   background-position: top;
-   background-size: cover;
-   height: 80vh;
-   position: relative;
-   /* position: absolute; */
-   /* clip-path: polygon(100% 0, 100% 79%, 100% 95%, 0% 100%, 0 48%, 0 0); */
-   clip-path: polygon(100% 0%, 75% 50%, 100% 100%, 25% 100%, 0% 50%, 25% 0%);
+      to right bottom, rgba(58, 52, 105, 0.3),
+      rgba(90, 7, 83, 0.7)),
+    url(https://images.pexels.com/photos/273843/pexels-photo-273843.jpeg?w=940&h=650&auto=compress&cs=tinysrgb);
+    background-position: top;
+    background-size: cover;
+    height: 80vh;
+    position: relative;
+    clip-path: polygon(100% 0%, 85% 50%, 100% 100%, 15% 100%, 0% 50%, 15% 0);
   }
 
   #app-alert {
@@ -211,7 +201,7 @@ export default {
     border-image-slice: 1;
     background: linear-gradient(to right, #5B15D4 0%,rgba(100,2,68,1) 100%);
     -webkit-background-clip: text;
-    text-fill-color: transparent;
+    background-clip: text;
     color: transparent;
     border-radius: 2px;
     transform: translateY(-1px);
