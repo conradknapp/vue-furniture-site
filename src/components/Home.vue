@@ -12,7 +12,7 @@
       v-layout(row wrap v-if="!loading")
         v-flex(xs12).text-xs-center
           v-carousel(v-bind="{ 'cycle': cycleStop }" interval="3000" lazy style="cursor: pointer;" delimiter-icon="home" hide-controls)
-            v-carousel-item(@mouseover="stopCarousel" @mouseout="startCarousel" v-for="product in products" :src="product.imageUrl" :key="product.id" @click="onLoadProduct(product.id)")
+            v-carousel-item(@mouseover="stopCarousel" @mouseout="startCarousel" v-for="product in products" :src="product.imageUrl" :key="product.id" @click="onLoadProduct(product.id)" id="carousel-item")
               h1.title {{product.title}}
       v-layout(row wrap)
         v-flex(xs12).text-xs-center
@@ -110,11 +110,10 @@ export default {
       }
     }
   },
-  created() {
-    window.addEventListener('scroll', this.checkSlide);
-  },
-  destroyed() {
-    window.removeEventListener('scroll', this.checkSlide);
+  mounted() {
+    document.addEventListener('scroll', this.checkSlide)
+    document.addEventListener('scroll', this.checkSlide2)
+    document.addEventListener('scroll', this.checkSlide3)
   },
   methods: {
     onLoadProduct(id) {
@@ -137,16 +136,40 @@ export default {
         await this.$store.dispatch('loadProducts', 3);
         await this.$router.push('/products')
      },
-    checkSlide(e) {
-      const slidingForm = document.querySelector(".slide-in");
-      const slideInAt = (scrollY + innerHeight) - (slidingForm.offsetHeight / 2);
-      const formBottom = slidingForm.offsetTop + slidingForm.offsetHeight + 1350;
-      const half = slideInAt > slidingForm.offsetTop;
-      const notScrolledPast = window.scrollY < formBottom ;
-      if (half && notScrolledPast) {
+    checkSlide() {
+      const sliderRect = document.querySelector('#hero-arrow-two').getBoundingClientRect();
+      const breakpoint = sliderRect.top + window.scrollY
+      const slidingForm = document.querySelector(".slide-in")
+      if (scrollY > breakpoint) {
         slidingForm.classList.add('active');
       } else {
         slidingForm.classList.remove('active');
+      }
+    },
+    checkSlide2() {
+      const sliderRect = document.querySelector('#hero-arrow-one').getBoundingClientRect()
+      const slidingThing = document.querySelectorAll('.heading-primary-main')[1]
+      const slidingThing2 = document.querySelectorAll('.heading-primary-sub')[1]
+      const breakpoint = sliderRect.top + scrollY
+      if (scrollY > breakpoint) {
+        slidingThing.style.animationName = 'moveInLeft'
+        slidingThing2.style.animationName = 'moveInRight'
+      } else {
+        slidingThing.style.animationName = ''
+        slidingThing2.style.animationName = ''
+      }
+    },
+    checkSlide3() {
+      const sliderRect = document.querySelector('#carousel-item').getBoundingClientRect()
+      const slidingThing = document.querySelectorAll('.heading-primary-main')[0]
+      const slidingThing2 = document.querySelectorAll('.heading-primary-sub')[0]
+      const breakpoint = sliderRect.top + scrollY
+      if (scrollY > breakpoint) {
+        slidingThing.style.animationName = 'moveInLeft'
+        slidingThing2.style.animationName = 'moveInRight'
+      } else {
+        slidingThing.style.animationName = ''
+        slidingThing2.style.animationName = ''
       }
     }
   },
@@ -166,21 +189,25 @@ export default {
     url(https://images.duckduckgo.com/iu/?u=http%3A%2F%2F2.bp.blogspot.com%2F-Evv3t00urQE%2FUVjmycn_Q3I%2FAAAAAAAAADA%2F-lZM0xo9hxA%2Fs1600%2FMid%2BCentury%2BFurniture%2B008.JPG&f=1);
     background-position: top;
     background-size: cover;
+    background-attachment: fixed;
     height: 80vh;
     position: relative;
     clip-path: polygon(80% 0%, 100% 50%, 80% 100%, 0% 100%, 15% 50%, 0% 0%);
+    /* animation: 3.2s moveInLeft ease-out; */
   }
 
   #hero-arrow-two {
     background-image: linear-gradient(
-      to right bottom, rgba(58, 52, 105, 0.3),
-      rgba(90, 7, 83, 0.7)),
+      to right bottom, rgba(179, 153, 241, 0.3),
+      rgba(7, 2, 78, 0.7)),
     url(https://images.pexels.com/photos/273843/pexels-photo-273843.jpeg?w=940&h=650&auto=compress&cs=tinysrgb);
     background-position: top;
     background-size: cover;
+    background-attachment: fixed;
     height: 80vh;
     position: relative;
     clip-path: polygon(100% 0%, 85% 50%, 100% 100%, 15% 100%, 0% 50%, 15% 0);
+    /* animation: 3.2s moveInRight ease-out;  */
   }
 
   #app-alert {
@@ -235,7 +262,7 @@ export default {
   }
 
   .heading-primary {
-    color: #fff;
+    color: white;
     text-transform: uppercase;
     backface-visibility: hidden;
   }
@@ -245,7 +272,22 @@ export default {
     font-size: 60px;
     font-weight: 400;
     letter-spacing: 15px;
-    animation: 1s moveInLeft ease-out;
+    background-image: linear-gradient(to right, rgb(207, 58, 187) 0%,rgb(102, 21, 91) 75%, rgb(35, 7, 66) 100%);
+    /* linear-gradient(to bottom,  transparent 20%, currentColor 21%); */
+    white-space: nowrap;
+    overflow: hidden;
+    background-position: 0 1.3em;
+    background-repeat: no-repeat;
+    background-size: 0% 2px;
+    transition: background-size 0.3s ease-in, color 0s ease-in 0.3s; 
+    animation-duration: 1s;
+    /* animation-name: moveInLeft; */
+    animation-timing-function: ease-out;
+  }
+
+  .heading-primary-main:hover {
+    background-size: 97% 3px;
+    color: rgb(245, 243, 243);
   }
 
   .heading-primary-sub {
@@ -253,7 +295,14 @@ export default {
     font-size: 20px;
     letter-spacing: 26px;
     font-weight: 700;
-    animation: 1.2s moveInRight ease-out;
+    /* -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-image: var(--transition-gradient); */
+    white-space: nowrap;
+    overflow: hidden;
+    animation-timing-function: ease-out;
+    animation-duration: 1.2s;
+    /* animation-name: moveInRight; */
   }
 
   @keyframes moveInLeft {
