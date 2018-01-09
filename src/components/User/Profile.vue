@@ -7,11 +7,11 @@
     v-layout.mt-5(row v-else)
       v-flex(xs12)
         h1.text-xs-center Favorited: {{userFavorites.length}}
-    v-layout#wrapper.grid
-      v-flex(v-for="product in allProducts" @mouseenter="logCards" :key="product.title" v-if="userFavorites.includes(product.id)").item
+    v-layout.grid
+      v-flex(v-for="product in allProducts" :key="product.title" v-if="userFavorites.includes(product.id)").item
         v-card(hover)
-          v-card-media(style="cursor: pointer" @mousedown.native='onMousedown' @click="goToProduct(product.id)" :src="product.imageUrl" height="200px" min-width="100px").item-content
-          v-card-text.text-xs-center {{product.title}}
+          v-card-media(style="cursor: pointer;" @mousedown.native="onMousedown" @click="goToProduct(product.id)" :src="product.imageUrl" height="200px" min-width="100px").item-content
+          v-card-text.text-xs-center {{product.id}}
 </template>
 
 <script>
@@ -21,7 +21,9 @@ export default {
       mousedownX: '',
       mousedownY: '',
       drag: false,
-      cards: null
+      cards: null,
+      storedCards: null,
+      orderedCards: null
     }
   },
   computed: {
@@ -38,7 +40,10 @@ export default {
       return this.$store.getters.user.favoritedProducts
     },
     allProducts() {
-      return this.$store.getters.allProducts
+      // local storage solution to save order of rearranged tiles is partially working
+      // if Muuri throws an error when 'allProductsFiltered' is put in, go back to 'allProducts'
+      // need to find a way to add the title back and figure out why all favorites aren't rendered when favorited
+      return this.$store.getters.allProductsFiltered
     }
   },
   watch: {
@@ -66,23 +71,25 @@ export default {
     }))
   },
   methods: {
-    onMousedown(event) {
+    onMousedown(e) {
       this.drag = false
-      this.mousedownX = event.clientX
-      this.mousedownY = event.clientY
-    },
-    logCards() {
-      console.log(Array.from(this.cards.getItems().map(el => el._element.innerText)))
+      this.mousedownX = e.clientX
+      this.mousedownY = e.clientY
     },
     goToProduct(id) {
       if (!this.drag) {
         this.$store.dispatch('loadProduct', id)
         this.$router.push('/products/' + id)
+      } else {
+        this.orderedCards = Array.from(this.cards.getItems().map(el => el._element.textContent)) 
+        localStorage.setItem('cards', JSON.stringify(this.orderedCards))
       }
     },
   },
   beforeMount() {
     this.$store.dispatch('loadAllProducts')
+    this.storedCards = JSON.parse(localStorage.getItem('cards'))
+    this.$store.dispatch('filterAllProducts', this.storedCards)
   }
 }
 </script>

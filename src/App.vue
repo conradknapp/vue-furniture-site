@@ -123,6 +123,7 @@
     methods: {
       onLogout() {
         this.$store.dispatch('logout')
+        this.$router.push('/')
       },
       goToProfile() {
         this.$router.push('/profile')

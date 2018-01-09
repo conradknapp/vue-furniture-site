@@ -8,6 +8,7 @@ export const store = new Vuex.Store({
   state: {
     loadedProducts: [],
     allProducts: [],
+    allProductsFiltered: [],
     user: null,
     loading: null,
     heartLoading: null,
@@ -92,6 +93,13 @@ export const store = new Vuex.Store({
     },
     setLastKeys(state, payload) {
       state.lastKeys = payload
+    },
+    filterAllProducts(state, payload) {
+      const slicedArray = [...state.allProducts].filter(el => payload.includes(el.id))
+      const hash = {}
+      slicedArray.forEach(x => { hash[x.id] = x })
+      state.allProductsFiltered = payload.map(x => { return hash[x] })
+      console.log('filtering...', state.allProductsFiltered)
     }
   },
   actions: {
@@ -409,6 +417,9 @@ export const store = new Vuex.Store({
     },
     setResultsLog({commit}, payload) {
       commit('setResultsLog', payload)
+    },
+    filterAllProducts({commit}, payload) {
+      commit('filterAllProducts', payload)
     }
   },
   getters: {
@@ -463,6 +474,9 @@ export const store = new Vuex.Store({
     },
     allProducts(state) {
       return state.allProducts
+    },
+    allProductsFiltered(state) {
+      return state.allProductsFiltered
     },
     flag(state) {
       return state.flag
