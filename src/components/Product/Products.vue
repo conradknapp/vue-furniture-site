@@ -153,6 +153,7 @@ export default {
 
 <style>
   #title {
+    margin-right: 50px;
     font-family: sans-serif;
     font-weight: 100;
     padding: 3px 10px;

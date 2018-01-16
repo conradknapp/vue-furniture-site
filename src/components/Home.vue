@@ -14,10 +14,10 @@
           v-carousel(v-bind="{ 'cycle': cycleStop }" interval="3000" lazy style="cursor: pointer;" delimiter-icon="home" hide-controls)
             v-carousel-item(@mouseover="stopCarousel" @mouseout="startCarousel" v-for="product in products" :src="product.imageUrl" :key="product.id" @click="onLoadProduct(product.id)" id="carousel-item")
               h1.title {{product.title}}
-      v-layout(row wrap)
-        v-flex(xs12).text-xs-center
-          v-icon(x-large v-if="!userIsAuthenticated")#arrow keyboard_arrow_down
-          v-icon(x-large v-if="!userIsAuthenticated").pb-3#arrow keyboard_arrow_down
+      //- v-layout(row wrap)
+      //-   v-flex(xs12).text-xs-center
+      //-     v-icon(x-large v-if="!userIsAuthenticated")#arrow keyboard_arrow_down
+      //-     v-icon(x-large v-if="!userIsAuthenticated").pb-3#arrow keyboard_arrow_down
       v-layout(v-if="!userIsAuthenticated")#hero-arrow-one
         header#header
           h1.heading-primary
@@ -30,21 +30,23 @@
             span.heading-primary-sub Love your home
       v-layout(row wrap v-if="!userIsAuthenticated")
         v-flex(xs12)
-          .bg
-          .bg.bg2
-          .bg.bg3
-          .bg.bg4
-          .content
+          //- .bg
+          //- .bg.bg2
+          //- .bg.bg3
+          //- .bg.bg4
+          //- .content
+          #particles-js
             v-container.slide-in
               v-layout(row wrap v-if="!error")
-                v-flex(xs12 sm6 offset-sm3).text-xs-center
+                v-flex(xs12 sm6 offset-sm3).text-white.text-xs-center
                   h1 Let's Get Started
+                  h3 Sign up to save your favorites
               v-layout(row wrap v-if="error && !loading")
                 v-flex(xs12 sm6 offset-sm3)
                   app-alert(@dismissed="onDismissed" :icon="error.icon" :color="error.color" :submessage="error.submessage" :text="error.message")
               v-layout(row wrap)
                 v-flex(xs12 sm6 offset-sm3)
-                  v-card(color="orange lighten-2")
+                  v-card(color="purple darken-2")#card-style
                     v-card-text
                       v-container
                         form(@submit.prevent="onSignup" @input="signUpInput = true")
@@ -111,6 +113,7 @@ export default {
     }
   },
   mounted() {
+    particlesJS.load('particles-js', './src/components/particles.json');
     document.addEventListener('scroll', this.checkSlide)
     document.addEventListener('scroll', this.checkSlide2)
     document.addEventListener('scroll', this.checkSlide3)
@@ -139,7 +142,8 @@ export default {
     checkSlide() {
       const sliderRect = document.querySelector('#hero-arrow-two').getBoundingClientRect();
       const breakpoint = sliderRect.top + window.scrollY
-      const slidingForm = document.querySelector(".slide-in")
+      console.log(breakpoint)
+      const slidingForm = document.querySelector('.slide-in');
       if (scrollY > breakpoint) {
         slidingForm.classList.add('active');
       } else {
@@ -182,6 +186,20 @@ export default {
 </script>
 
 <style>
+  .text-white {
+    color:white;
+  }
+
+  #card-style {
+    opacity: 0.95;
+  }
+
+  #particles-js {
+    background: rgb(187, 4, 187);
+    height: 500px;
+    z-index: 1;
+  }
+
   #hero-arrow-one {
     background-image: linear-gradient(
       to right bottom, rgba(145, 133, 250, 0.3),
@@ -193,7 +211,6 @@ export default {
     height: 80vh;
     position: relative;
     clip-path: polygon(80% 0%, 100% 50%, 80% 100%, 0% 100%, 15% 50%, 0% 0%);
-    /* animation: 3.2s moveInLeft ease-out; */
   }
 
   #hero-arrow-two {
@@ -207,7 +224,6 @@ export default {
     height: 80vh;
     position: relative;
     clip-path: polygon(100% 0%, 85% 50%, 100% 100%, 15% 100%, 0% 50%, 15% 0);
-    /* animation: 3.2s moveInRight ease-out;  */
   }
 
   #app-alert {
@@ -231,7 +247,6 @@ export default {
     background-clip: text;
     color: transparent;
     border-radius: 2px;
-    transform: translateY(-1px);
   }
 
   .title {
@@ -273,7 +288,6 @@ export default {
     font-weight: 400;
     letter-spacing: 15px;
     background-image: linear-gradient(to right, rgb(207, 58, 187) 0%,rgb(102, 21, 91) 75%, rgb(35, 7, 66) 100%);
-    /* linear-gradient(to bottom,  transparent 20%, currentColor 21%); */
     white-space: nowrap;
     overflow: hidden;
     background-position: 0 1.3em;
@@ -281,7 +295,6 @@ export default {
     background-size: 0% 2px;
     transition: background-size 0.3s ease-in, color 0s ease-in 0.3s; 
     animation-duration: 1s;
-    /* animation-name: moveInLeft; */
     animation-timing-function: ease-out;
   }
 
@@ -295,14 +308,10 @@ export default {
     font-size: 20px;
     letter-spacing: 26px;
     font-weight: 700;
-    /* -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-image: var(--transition-gradient); */
     white-space: nowrap;
     overflow: hidden;
     animation-timing-function: ease-out;
     animation-duration: 1.2s;
-    /* animation-name: moveInRight; */
   }
 
   @keyframes moveInLeft {
@@ -331,7 +340,6 @@ export default {
 
   .bg {
     clip-path: polygon(0 0, 75% 0%, 100% 100%, 0 100%);
-    /* clip-path: polygon(100% 0, 100% 79%, 100% 100%, 0% 100%, 0 48%, 0 5%); */
     animation:slide 3s ease-in-out infinite alternate;
     background-image: linear-gradient(-60deg, #dcf 50%, #99f 50%);
     left: -50%;
@@ -399,6 +407,9 @@ export default {
   }
 
   .slide-in {
+    position: absolute;
+    left: -50%;
+    right: -50%;
     opacity: 0;
     transform: translateX(-20%) scale(1);
     transition: 2s all 0.5s;

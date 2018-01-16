@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-container.mt-5
+  v-container(flexbox center)
     v-layout(row wrap v-if="!error")
       v-flex(xs12 sm6 offset-sm3).text-xs-center
         h1 Get started here

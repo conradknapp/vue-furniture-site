@@ -217,7 +217,6 @@ export const store = new Vuex.Store({
             //   commit('setResultsLog', 'You have reached the end')
             //   return
             // }
-            console.log(arrayOfKeys[0]);
             getters.lastKeys.push(arrayOfKeys[0]);
             getters.lastKeys.splice(-3, getters.lastKeys.length - 2); 
             if (getters.lastKeys[getters.lastKeys.length - 1] === getters.lastKeys[getters.lastKeys.length - 2]) {
@@ -226,7 +225,6 @@ export const store = new Vuex.Store({
               commit('setLastKeys', [])
               return
             }
-            console.log(getters.lastKeys);
             commit('setOldestKey', arrayOfKeys[0])
             commit('setLoadedProducts', slice)
             commit('setLoading', false) 
@@ -250,7 +248,6 @@ export const store = new Vuex.Store({
               return el
             }
           })
-          // console.log(results)
           commit('setSearchResults', results)
       })
     },

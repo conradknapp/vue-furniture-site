@@ -14,21 +14,21 @@
       v-toolbar-side-icon(@click.native.stop="sideNav = !sideNav" class="hidden-md-and-up")
       v-toolbar-title#main-title 
         router-link(to="/" tag="span" style="cursor: pointer") MCM & More
-      v-spacer(class="hidden-lg-and-down")
-      v-text-field(@blur="searchInput = ''" flex color="pink lighten-1" width="300px" prepend-icon="search" placeholder="Search any style" v-model="searchInput" @input="onSearch" single-line hide-details).ml-4.mr-2
+      v-spacer(class="hidden-xs-only")
+      v-text-field(@blur="searchInput = ''" flex color="pink lighten-1" width="300px" prepend-icon="search" placeholder="Search styles" v-model="searchInput" @input="onSearch" single-line hide-details).ml-4.mr-2
       v-card(dark v-if="onSearchResults")#card
         v-list
           v-list-tile(@click="goToResult(result.id)" v-for="result in onSearchResults" :key="result.title")
-            v-list-tile-title(v-html="`${result.title} | ${result.description.slice(0, 75)}...`") 
+            v-list-tile-title(v-html="`${result.title}`") 
             v-list-tile-action(v-if="userIsAuthenticated && userFavorites.includes(result.id)") 
               v-icon favorite
-      v-toolbar-items().hidden-sm-and-down
+      v-toolbar-items
         //- v-btn(flat :to="item.link" v-for="item in menuItems" :key="item.title") 
         //-   span(@click="reload")#click
         //-   v-icon(left) {{item.icon}
         //-   | {{item.title}}
-        v-btn(flat router @click="reload" )
-          v-icon(left).hidden-sm-only weekend
+        v-btn(flat router @click="reload").hidden-xs-only
+          v-icon(left).hidden-sm-and-down weekend
           | Products
         v-btn(flat @mouseenter="showFave = true" @mouseleave="showFave = false" @click="goToProfile" v-if="userIsAuthenticated")#profile-btn
           v-badge(color="blue")

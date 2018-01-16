@@ -1,0 +1,13 @@
+{
+  "particles": {
+    "number": {
+      "value": 100
+    },
+    "shape": {
+      "type": "image",
+      "image": {
+        "src": "https://svgshare.com/i/4yN"
+      }
+    }
+  }
+}
