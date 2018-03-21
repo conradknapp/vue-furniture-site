@@ -1,6 +1,6 @@
 <template lang="pug">
-  v-app#app
-    v-navigation-drawer(temporary overflow absolute v-model="sideNav")
+  v-app(class="orange")
+    v-navigation-drawer(app temporary fixed v-model="sideNav")
       v-list
         v-list-tile(v-for="item in menuItems" :key="item.title" :to="item.link")
           v-list-tile-action
@@ -10,12 +10,12 @@
           v-list-tile-action
             v-icon exit_to_app
           v-list-tile-content Logout
-    v-toolbar(fixed class="deep-purple darken-2" dark)#toolbar
+    v-toolbar(scroll-off-screen fixed class="deep-purple darken-2" dark)#toolbar
       v-toolbar-side-icon(@click.native.stop="sideNav = !sideNav" class="hidden-md-and-up")
       v-toolbar-title#main-title 
-        router-link(to="/" tag="span" style="cursor: pointer") MCM & More
+        router-link(to="/" tag="span" style="cursor: pointer") MCM
       v-spacer(class="hidden-xs-only")
-      v-text-field(@blur="searchInput = ''" flex color="pink lighten-1" width="300px" prepend-icon="search" placeholder="Search styles" v-model="searchInput" @input="onSearch" single-line hide-details).ml-4.mr-2
+      v-text-field(@blur="searchInput = ''" flex color="pink lighten-1" width="30vw" prepend-icon="search" placeholder="Search styles" v-model="searchInput" class="search-field" @input="onSearch" single-line hide-details).ml-4.mr-2
       v-card(dark v-if="onSearchResults")#card
         v-list
           v-list-tile(@click="goToResult(result.id)" v-for="result in onSearchResults" :key="result.title")
@@ -23,10 +23,6 @@
             v-list-tile-action(v-if="userIsAuthenticated && userFavorites.includes(result.id)") 
               v-icon favorite
       v-toolbar-items
-        //- v-btn(flat :to="item.link" v-for="item in menuItems" :key="item.title") 
-        //-   span(@click="reload")#click
-        //-   v-icon(left) {{item.icon}
-        //-   | {{item.title}}
         v-btn(flat router @click="reload").hidden-xs-only
           v-icon(left).hidden-sm-and-down weekend
           | Products
@@ -55,9 +51,7 @@
       return {
         sideNav: false,
         searchInput: '',
-        showFave: true,
-        something: '',
-        opacityNum: 0
+        showFave: false
       }
     },
     computed: {
@@ -105,11 +99,9 @@
               id: el.id
             }
           }).slice(0, 5)
-          // return this.$store.getters.searchResults.slice(0, 5);
         }
       },
       userFavorites() {
-        // need to return the most recent five (slice(0,5) and sorted by date they were favorited)
         let faveCopy = [...this.$store.getters.user.favoritedProducts]
         return faveCopy.slice(-5)
       },
@@ -135,15 +127,14 @@
         this.$router.push('/products/' + id)
       },
       async reload() {
-        // this.$store.dispatch('setFlag', true)
-        this.$store.dispatch('setResultsLog', false)
-        this.$store.dispatch('removeProducts', [])
+        await this.$store.dispatch('setResultsLog', false)
+        await this.$store.dispatch('removeProducts', [])
         await this.$store.dispatch('loadProducts', 3);
         await this.$router.push('/products')
      },
-      goToResult(id) {
-        this.$store.dispatch('loadProduct', id)
-        this.$router.push('/products/' + id)
+      async goToResult(id) {
+        await this.$store.dispatch('loadProduct', id)
+        setTimeout(() => this.$router.push('/products/' + id), 0)
       },
     },
     created() {
@@ -207,10 +198,5 @@
     width: 100%;
     z-index: 8;
     top: 100%;
-  }
-
-  #app {
-    /* background-color: #ddccff; */
-    background-image: linear-gradient(rgba(135, 60, 255, 0.2), rgba(135, 60, 255, 0.0) 80%), linear-gradient(-45deg, rgb(221,200,255) 25%, rgba(255, 208, 65, 0.8) 75%);
   }
 </style>

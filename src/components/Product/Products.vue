@@ -5,20 +5,20 @@
         v-tooltip(bottom)
           span Row layout
           v-btn(icon slot="activator" @click="flag = false")
-            v-icon(:color="flag === false ? 'purple' : ''") view_headline
+            v-icon(:color="!flag ? 'purple' : ''") view_headline
         v-tooltip(bottom)
           span Mozaic layout
           v-btn(icon slot="activator" @click="flag = true")
-            v-icon(:color="flag === true ? 'purple' : ''") view_quilt
+            v-icon(:color="flag ? 'purple' : ''") view_quilt
     v-layout(row wrap)
       v-flex(xs12 v-bind="{ [`sm${flag ? product.flex : 6}`]: true }" v-for="product in products" :key="product.id" hover @mouseenter="revealDescription(product)" @mouseleave="description = false")
         v-card.mt-3.ml-1.mr-2(hover)
-          v-card-media(lazy :src="product.imageUrl" :key="product.id" @click="goToProduct(product.id)" tag="button" :height="height")
+          v-card-media(lazy :src="product.imageUrl" :key="product.id" @click="goToProduct(product.id)" tag="button" height="40vh")
             v-container(fill-height fluid)
               v-layout(fill-height)
                 v-flex(xs12 align-end flexbox)
-                  span(v-text="product.title")#title.hidden-xs-only.headline
-                  span(v-if="product.description === description" v-text="description.match(/^[^.]+/)[0]")#description
+                  span(v-text="product.title" class="Product__Title").hidden-xs-only.headline
+                  span(v-if="product.description === description" v-text="description.match(/^[^.]+/)[0]" class="Product__Description")
                   div#favorite
                     v-btn(icon large v-if="userIsAuthenticated" @mouseenter="mouseEnterHeart = true" @mouseleave="mouseEnterHeart = false" @click="onAgree(product)")
                       v-icon(color="red darken-4" x-large v-if="userFavorites.includes(product.id)") favorite
@@ -27,7 +27,7 @@
                       v-icon(color="white" x-large) favorite
     v-layout(v-if="pageUpButton")
       v-flex#btn-container
-        v-btn(color="grey darken-2" @mouseenter="iconSwitch = false" @mouseleave="iconSwitch = true" @click="backToTop" absolute dark fixed bottom fab)#btn
+        v-btn(color="grey darken-2" @click="backToTop" dark fixed bottom right fab)
           v-icon(v-if="iconSwitch") navigation
           span(v-else)#span
             p top
@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import lodash from 'lodash'
+import throttle from 'lodash/throttle'
 export default {
   data() {
     return {
@@ -57,11 +57,7 @@ export default {
     }
   },
   computed: {
-    height() {
-      return '40vh'
-    },
     products() {
-      // return [...new Set(this.$store.getters.getProductsWithFlexProperty)]
       return this.$store.getters.getProductsWithFlexProperty
     },
     loading() {
@@ -90,26 +86,24 @@ export default {
   watch: {
     bottom(bottom) {
       if (bottom && !this.resultsLog) {
-        const func = _.throttle(this.infiniteScroll, 1000)
-        func()
-        // this.infiniteScroll()
+        const throttled = throttle(this.infiniteScroll, 1000)
+        throttled()
       }
     }
   },
   created() {
-      window.addEventListener('scroll', () => {
-        this.scrollY = scrollY
-        if (this.scrollY > 150) {
-          this.pageUpButton = true
-        } else {
-          this.pageUpButton = false
-        }
-      })
-      window.addEventListener('scroll', () => {
-        this.bottom = this.bottomVisible()
-      })
-      // this.$store.dispatch('infiniteScroll')
-      this.$store.dispatch('setResultsLog', false)
+    window.addEventListener('scroll', () => {
+      this.scrollY = scrollY
+      if (this.scrollY > 150) {
+        this.pageUpButton = true
+      } else {
+        this.pageUpButton = false
+      }
+    })
+    window.addEventListener('scroll', () => {
+      this.bottom = this.bottomVisible()
+    })
+    this.$store.dispatch('setResultsLog', false)
   },
   methods: {
     infiniteScroll() {
@@ -152,16 +146,14 @@ export default {
 </script>
 
 <style>
-  #title {
-    margin-right: 50px;
-    font-family: sans-serif;
-    font-weight: 100;
-    padding: 3px 10px;
-    position: relative;
-    display: inline-block;
+  .Product__Title {
     color: white;
-    overflow: hidden;
     background: rgba(0,0,0,0.3);
+  }
+
+  .Product__Title:hover {
+    background-color: rgba(74, 20, 140, 0.4);
+    transition-duration: 0.3s;
   }
 
   #span > * {
@@ -170,12 +162,7 @@ export default {
     font-size: 15px;
   }
 
-  #title:hover {
-    background-color: rgba(74, 20, 140, 0.4);
-    transition-duration: 0.3s;
-  }
-
-   #description {
+   .Product__Description {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -217,17 +204,6 @@ export default {
   #btn-container {
     display: flex;
     flex-direction: column;
-  }
-
-  #btn {
-    align-self: flex-end;
-    transform: translate(0px, -30px);
-    animation: buttonReveal 0.5s cubic-bezier(.25,.8,.5,1);
-  }
-
-  #btn:hover {
-    transform: translate(0px, -30px) scale(1.1);
-    transition-timing-function: 1s;
   }
 
   .gradient-btn {

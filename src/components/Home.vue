@@ -1,70 +1,48 @@
 <template lang="pug">
-    v-container(fluid grid-list-md)
-      v-layout(row wrap v-if="error && !loading")
-        v-flex(xs12)
-          app-alert(v-if="!errorContains" @dismissed="onDismissed" :icon="error.icon" :color="error.color" :submessage="error.submessage" :text="error.message")#app-alert
-      v-layout(row wrap v-if="!loading")
-        v-flex(xs12 class="text-xs-center")
-          v-btn(large transition @click="reload")#home-gradient-button See All Products
-      v-layout
-        v-flex(xs12).text-xs-center
-          v-progress-circular(indeterminate color="purple" :width="7" :size="70" v-if="loading")
-      v-layout(row wrap v-if="!loading")
-        v-flex(xs12).text-xs-center
-          v-carousel(v-bind="{ 'cycle': cycleStop }" interval="3000" lazy style="cursor: pointer;" delimiter-icon="home" hide-controls)
-            v-carousel-item(@mouseover="stopCarousel" @mouseout="startCarousel" v-for="product in products" :src="product.imageUrl" :key="product.id" @click="onLoadProduct(product.id)" id="carousel-item")
-              h1.title {{product.title}}
-      //- v-layout(row wrap)
-      //-   v-flex(xs12).text-xs-center
-      //-     v-icon(x-large v-if="!userIsAuthenticated")#arrow keyboard_arrow_down
-      //-     v-icon(x-large v-if="!userIsAuthenticated").pb-3#arrow keyboard_arrow_down
-      v-layout(v-if="!userIsAuthenticated")#hero-arrow-one
-        header#header
-          h1.heading-primary
-            span.heading-primary-main MCM & More
-            span.heading-primary-sub Love your home
-      v-layout(v-if="!userIsAuthenticated")#hero-arrow-two
-        header#header
-          h1.heading-primary
-            span.heading-primary-main MCM & More
-            span.heading-primary-sub Love your home
-      v-layout(row wrap v-if="!userIsAuthenticated")
-        v-flex(xs12)
-          //- .bg
-          //- .bg.bg2
-          //- .bg.bg3
-          //- .bg.bg4
-          //- .content
-          #particles-js
-            v-container.slide-in
-              v-layout(row wrap v-if="!error")
-                v-flex(xs12 sm6 offset-sm3).text-white.text-xs-center
-                  h1 Let's Get Started
-                  h3 Sign up to save your favorites
-              v-layout(row wrap v-if="error && !loading")
-                v-flex(xs12 sm6 offset-sm3)
-                  app-alert(@dismissed="onDismissed" :icon="error.icon" :color="error.color" :submessage="error.submessage" :text="error.message")
-              v-layout(row wrap)
-                v-flex(xs12 sm6 offset-sm3)
-                  v-card(color="purple darken-2")#card-style
-                    v-card-text
-                      v-container
-                        form(@submit.prevent="onSignup" @input="signUpInput = true")
-                          v-layout(row)
-                            v-flex(xs12)
-                              v-text-field(name="email" label="Email" id="email" v-model="email" type="email" prepend-icon="email" required)
-                          v-layout(row)
-                            v-flex(xs12)
-                              v-text-field(name="password" label="Password" id="password" v-model="password" 
-                              prepend-icon="extension" type="password" required)
-                          v-layout(row)
-                            v-flex(xs12)
-                              v-text-field(name="confirmPassword" label="Confirm Password" id="confirmPassword" v-model="confirmPassword" type="password" prepend-icon="gavel" :rules="[comparePasswords]" required)
-                          v-layout(row).text-xs-center
-                            v-flex(xs12)
-                              v-btn(color="blue" dark type="submit" :disabled='loading' :loading="loading") Submit
-                                span(slot="loader").custom-loader
-                                  v-icon(light) cached
+v-container(fluid grid-list-md)
+  v-layout(row wrap v-if="error && !loading")
+    v-flex(xs12)
+      app-alert(v-if="!errorContains" @dismissed="onDismissed" :icon="error.icon" :color="error.color" :submessage="error.submessage" :text="error.message")#app-alert
+  v-layout(row wrap v-if="!loading")
+    v-flex(xs12 class="text-xs-center")
+      v-btn(large transition @click="reload")#home-gradient-button See All Products
+  v-layout
+    v-flex(xs12).text-xs-center
+      v-progress-circular(indeterminate color="purple" :width="7" :size="70" v-if="loading")
+  v-layout(row wrap v-if="!loading")
+    v-flex(xs12).text-xs-center
+      v-carousel(v-bind="{ 'cycle': cycleStop }" interval="3000" lazy style="cursor: pointer;" delimiter-icon="home" hide-controls)
+        v-carousel-item(@mouseover="toggleCarousel" @mouseout="toggleCarousel" v-for="product in products" :src="product.imageUrl" :key="product.id" @click="onLoadProduct(product.id)" id="carousel-item")
+          h1.title {{product.title}}
+      v-container
+        v-layout(row wrap v-if="!error")
+          v-flex(xs12 sm6 offset-sm3).text-white.text-xs-center
+            h1 Let's Get Started
+            h3 Sign up to save your favorites
+        v-layout(row wrap v-if="error && !loading")
+          v-flex(xs12 sm6 offset-sm3)
+            app-alert(@dismissed="onDismissed" :icon="error.icon" :color="error.color" :submessage="error.submessage" :text="error.message")
+        v-layout(row wrap)
+          v-flex(xs12 sm6 offset-sm3)
+            v-card(color="purple darken-2")#card-style
+              v-card-text
+                v-container
+                  form(@submit.prevent="onSignup" @input="signUpInput = true")
+                    v-layout(row)
+                      v-flex(xs12)
+                        v-text-field(name="email" label="Email" id="email" v-model="email" type="email" prepend-icon="email" required)
+                    v-layout(row)
+                      v-flex(xs12)
+                        v-text-field(name="password" label="Password" id="password" v-model="password" 
+                        prepend-icon="extension" type="password" required)
+                    v-layout(row)
+                      v-flex(xs12)
+                        v-text-field(name="confirmPassword" label="Confirm Password" id="confirmPassword" v-model="confirmPassword" type="password" prepend-icon="gavel" :rules="[comparePasswords]" required)
+                    v-layout(row).text-xs-center
+                      v-flex(xs12)
+                        v-btn(color="blue" dark type="submit" :disabled='loading' :loading="loading") Submit
+                          span(slot="loader").custom-loader
+                            v-icon(light) cached
 </template>
 
 <script>
@@ -95,11 +73,7 @@ export default {
       this.$store.getters.user !== undefined
     },
     comparePasswords() {
-      if (this.password !== this.confirmPassword) {
-        return 'Passwords do not match'
-      } else {
-        return ''
-      }
+      this.password !== this.confirmPassword ? 'Passwords do not match' : ''
     },
     errorContains() {
       return this.error.message.includes('Sign up')
@@ -112,20 +86,11 @@ export default {
       }
     }
   },
-  mounted() {
-    particlesJS.load('particles-js', './src/components/particles.json');
-    document.addEventListener('scroll', this.checkSlide)
-    document.addEventListener('scroll', this.checkSlide2)
-    document.addEventListener('scroll', this.checkSlide3)
-  },
   methods: {
     onLoadProduct(id) {
       this.$router.push('/products/' + id)
     },
-    stopCarousel() {
-      this.cycleStop = !this.cycleStop
-    },
-    startCarousel() {
+    toggleCarousel() {
       this.cycleStop = !this.cycleStop
     },
     onDismissed() {
@@ -138,115 +103,18 @@ export default {
         this.$store.dispatch('removeProducts', [])
         await this.$store.dispatch('loadProducts', 3);
         await this.$router.push('/products')
-     },
-    checkSlide() {
-      const sliderRect = document.querySelector('#hero-arrow-two').getBoundingClientRect();
-      const breakpoint = sliderRect.top + window.scrollY
-      console.log(breakpoint)
-      const slidingForm = document.querySelector('.slide-in');
-      if (scrollY > breakpoint) {
-        slidingForm.classList.add('active');
-      } else {
-        slidingForm.classList.remove('active');
-      }
-    },
-    checkSlide2() {
-      const sliderRect = document.querySelector('#hero-arrow-one').getBoundingClientRect()
-      const slidingThing = document.querySelectorAll('.heading-primary-main')[1]
-      const slidingThing2 = document.querySelectorAll('.heading-primary-sub')[1]
-      const breakpoint = sliderRect.top + scrollY
-      if (scrollY > breakpoint) {
-        slidingThing.style.animationName = 'moveInLeft'
-        slidingThing2.style.animationName = 'moveInRight'
-      } else {
-        slidingThing.style.animationName = ''
-        slidingThing2.style.animationName = ''
-      }
-    },
-    checkSlide3() {
-      const sliderRect = document.querySelector('#carousel-item').getBoundingClientRect()
-      const slidingThing = document.querySelectorAll('.heading-primary-main')[0]
-      const slidingThing2 = document.querySelectorAll('.heading-primary-sub')[0]
-      const breakpoint = sliderRect.top + scrollY
-      if (scrollY > breakpoint) {
-        slidingThing.style.animationName = 'moveInLeft'
-        slidingThing2.style.animationName = 'moveInRight'
-      } else {
-        slidingThing.style.animationName = ''
-        slidingThing2.style.animationName = ''
-      }
-    }
+     }
   },
   beforeMount() {
-    setTimeout(() => {
-      this.$store.dispatch('clearError')
-    }, 10000)
+    setTimeout(() => this.$store.dispatch('clearError'), 10000)
   }
 }
 </script>
 
 <style>
-  .text-white {
-    color:white;
-  }
-
-  #card-style {
-    opacity: 0.95;
-  }
-
-  #particles-js {
-    background: rgb(187, 4, 187);
-    height: 500px;
-    z-index: 1;
-  }
-
-  #hero-arrow-one {
-    background-image: linear-gradient(
-      to right bottom, rgba(145, 133, 250, 0.3),
-      rgba(136, 7, 125, 0.7)),
-    url(https://images.duckduckgo.com/iu/?u=http%3A%2F%2F2.bp.blogspot.com%2F-Evv3t00urQE%2FUVjmycn_Q3I%2FAAAAAAAAADA%2F-lZM0xo9hxA%2Fs1600%2FMid%2BCentury%2BFurniture%2B008.JPG&f=1);
-    background-position: top;
-    background-size: cover;
-    background-attachment: fixed;
-    height: 80vh;
-    position: relative;
-    clip-path: polygon(80% 0%, 100% 50%, 80% 100%, 0% 100%, 15% 50%, 0% 0%);
-  }
-
-  #hero-arrow-two {
-    background-image: linear-gradient(
-      to right bottom, rgba(179, 153, 241, 0.3),
-      rgba(7, 2, 78, 0.7)),
-    url(https://images.pexels.com/photos/273843/pexels-photo-273843.jpeg?w=940&h=650&auto=compress&cs=tinysrgb);
-    background-position: top;
-    background-size: cover;
-    background-attachment: fixed;
-    height: 80vh;
-    position: relative;
-    clip-path: polygon(100% 0%, 85% 50%, 100% 100%, 15% 100%, 0% 50%, 15% 0);
-  }
-
   #app-alert {
     margin-top: 5rem;
     margin-bottom: 0;
-  }
-
-  #home-gradient-button {
-    margin-top: 5rem;
-    background: linear-gradient(to right, #5B15D4 0%,rgba(100,2,68,1) 100%);
-    color:white;
-    transition: all .1s ease; 
-  }
-  
-  #home-gradient-button:hover {
-    border: 2px solid transparent;
-    border-image: linear-gradient(to right, #5B15D4 0%,rgba(100,2,68,1) 100%);
-    border-image-slice: 1;
-    background: linear-gradient(to right, #5B15D4 0%,rgba(100,2,68,1) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    border-radius: 2px;
   }
 
   .title {
@@ -269,154 +137,13 @@ export default {
     animation-play-state: paused;
   }
 
-  #header {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-
-  .heading-primary {
-    color: white;
-    text-transform: uppercase;
-    backface-visibility: hidden;
-  }
-  
-  .heading-primary-main {
-    display: block;
-    font-size: 60px;
-    font-weight: 400;
-    letter-spacing: 15px;
-    background-image: linear-gradient(to right, rgb(207, 58, 187) 0%,rgb(102, 21, 91) 75%, rgb(35, 7, 66) 100%);
-    white-space: nowrap;
-    overflow: hidden;
-    background-position: 0 1.3em;
-    background-repeat: no-repeat;
-    background-size: 0% 2px;
-    transition: background-size 0.3s ease-in, color 0s ease-in 0.3s; 
-    animation-duration: 1s;
-    animation-timing-function: ease-out;
-  }
-
-  .heading-primary-main:hover {
-    background-size: 97% 3px;
-    color: rgb(245, 243, 243);
-  }
-
-  .heading-primary-sub {
-    display: block;
-    font-size: 20px;
-    letter-spacing: 26px;
-    font-weight: 700;
-    white-space: nowrap;
-    overflow: hidden;
-    animation-timing-function: ease-out;
-    animation-duration: 1.2s;
-  }
-
-  @keyframes moveInLeft {
-    0% {
-      opacity: 0;
-      transform: translateX(-100px);
-    }
-
-    100% {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-
-  @keyframes moveInRight {
-    0% {
-      opacity: 0;
-      transform: translateX(100px);
-    }
-
-    100% {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-
-  .bg {
-    clip-path: polygon(0 0, 75% 0%, 100% 100%, 0 100%);
-    animation:slide 3s ease-in-out infinite alternate;
-    background-image: linear-gradient(-60deg, #dcf 50%, #99f 50%);
-    left: -50%;
-    opacity: 0.5;
-    position: absolute;
-    right: -50%;
-    top: 100%;
-    z-index: -1;
-    height: 600px;
-  }
-
-  .bg2 {
-    animation-direction: alternate-reverse;
-    animation-duration: 4.8s;
-  }
-
-  .bg3 {
-    animation-duration: 6.2s;
-  }
-
-  .bg4 {
-    animation-duration: 9s;
-  }
-
-  @keyframes slide {
-    0% {
-      transform:translateX(-25%);
-    }
-    100% {
-      transform:translateX(25%);
-    }
-  }
-
-  .content {
-    width: 100%;
-    top: 100%;
-    margin-top: 5rem;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    position: absolute;
-    z-index: 1;
-  }
-
-  #arrow {
-    position: absolute;
-    top: 100%;
-    bottom: 0;
-    height: 6rem;
-    left: -50%;
-    right: -50%;
-    z-index: 5;
-    animation: arrowDown .7s infinite alternate ease-in-out;
-  }
-
-  @keyframes arrowDown {
-    0% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    100% {
-      opacity: 0.7;
-      transform: translateY(-0.2em);
-    }
-  }
-
   .slide-in {
     position: absolute;
     left: -50%;
     right: -50%;
     opacity: 0;
+    padding: 0;
     transform: translateX(-20%) scale(1);
     transition: 2s all 0.5s;
-  }
-
-  .slide-in.active {
-    opacity: 1;
-    transform: translateX(0%) scale(1);
   }
 </style>

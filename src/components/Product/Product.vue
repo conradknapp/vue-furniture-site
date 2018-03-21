@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-container(fill-height).mt-5
+  v-container(flexbox center).mt-5.mb-5
     v-layout(row wrap v-if="loading")
       v-flex(xs12).text-xs-center
         v-progress-circular(indeterminate color="purple" :width="7" :size="70" v-if="loading")
@@ -9,7 +9,7 @@
           v-card-title
             h1#title-product {{product.title}}
             v-spacer
-            v-btn(icon dark color="indigo" @click="navBack")#backspace
+            v-btn(icon dark color="indigo" @click="navBack")
               v-icon arrow_back
             template(v-if='userIsCreator')
               v-spacer
@@ -141,19 +141,6 @@ export default {
     position: absolute;
     top: 17px;
     right: 10px;
-  }
-
-  #backspace:hover {
-    animation: arrowLeft 0.7s infinite alternate ease-in-out;
-  }
-
-  @keyframes arrowLeft {
-    0% {
-      transform: translate(0);
-    }
-    100% {
-      transform: translate(-0.2em);
-    }
   }
 
   h3 {
