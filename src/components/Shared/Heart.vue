@@ -23,24 +23,24 @@
   position: absolute;
 }
 
-.heart:nth-child(1) svg {
-    opacity: 0;
-    animation: heartUp 1.4s forwards ease-in;
+.heart:nth-of-type(1) svg {
+  opacity: 0;
+  animation: heartUp 1.4s forwards ease-in;
 }
 
-.heart:nth-child(2) svg {
-    position: absolute;
-    left: 1rem;
-    opacity: 0;
-    animation: heartUp 1.4s 0.2s forwards ease-in;
-  }
+.heart:nth-of-type(2) svg {
+  position: absolute;
+  left: 1rem;
+  opacity: 0;
+  animation: heartUp 1.4s 0.2s forwards ease-in;
+}
 
-.heart:nth-child(3) svg {
-    position: absolute;
-    left: 0.5rem;
-    opacity: 0;
-    animation: heartUp 1.4s 0.35s forwards ease-in;
-  }
+.heart:nth-of-type(3) svg {
+  position: absolute;
+  left: 0.5rem;
+  opacity: 0;
+  animation: heartUp 1.4s 0.35s forwards ease-in;
+}
 
 svg {
   fill: red;

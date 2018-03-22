@@ -17,24 +17,18 @@
           v-tooltip(right)
             span Click to enlarge image
             v-card-media(slot="activator" @click="togglePictureDialog" :src="product.imageUrl" style='height: 200px; width: 100%; object-fit: contain')#media
-              v-container(fill-height fluid)
-                v-layout(fill-height)
-                  v-flex(xs12 align-end flexbox)
-                    #favorite-btn
-                      heart-flutter(v-if="unAuthFave && !dontShow")#heart-flutter
-                      heart-flutter(v-if="heartLoading && !dontShow")#heart-flutter
-                      v-btn(icon large v-if="userIsAuthenticated && !userIsCreator" @mouseenter="mouseEnterHeart = true" @mouseleave="mouseEnterHeart = false" @click="onAgree")
-                        v-icon(color="red darken-4" x-large v-if="onProductLiked") favorite
-                        v-icon(color="white" x-large v-else) favorite
-                      v-btn(icon large v-if="!userIsAuthenticated" @click="onUnAuthFave")
-                        v-icon(x-large color="white") favorite
+              heart-flutter(v-if="unAuthFave && !dontShow")#heart-flutter
+              heart-flutter(v-if="heartLoading && !dontShow")#heart-flutter
+              v-btn(icon x-large v-if="userIsAuthenticated && !userIsCreator" @mouseenter="mouseEnterHeart = true" @mouseleave="mouseEnterHeart = false" @click="onAgree")
+                v-icon(color="red darken-4" x-large v-if="onProductLiked") favorite
+                v-icon(color="white" x-large v-else) favorite
+              v-btn(icon x-large v-if="!userIsAuthenticated" @click="onUnAuthFave")
+                v-icon(x-large color="white") favorite
           v-dialog(v-model="dialog")
             v-card
               v-card-media(:src="product.imageUrl" height="500px")
           v-card-text
-            //- v-chip.mb-3(color="orange darken-3" text-color="white" v-for="p in product.categories" :key="p").hidden-sm-and-down {{p}}
-            //-   v-icon(right) label
-            h3 {{product.description}}
+            p {{product.description}}
           v-card-actions
             v-btn(flat dark round class="deep-purple darken-2" :href="link.linkUrl" v-for="link in product.links" :key="link.linkTitle") {{link.linkTitle}}
 </template>
@@ -112,7 +106,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
   #title-product {
     font-family: sans-serif;
     font-weight: 100;
@@ -137,15 +131,11 @@ export default {
     z-index:99;
   }
 
-  #favorite-btn {
+  /* #favorite-btn {
     position: absolute;
     top: 17px;
     right: 10px;
-  }
-
-  h3 {
-    font-weight: 100;
-  }
+  } */
 
   @media screen and (min-width: 350px) {
     #media {

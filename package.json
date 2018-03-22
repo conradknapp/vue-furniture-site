@@ -10,6 +10,7 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "dompurify": "^1.0.3",
     "firebase": "^4.6.2",
     "firebase-tools": "^3.17.7",
     "global": "^4.3.2",

@@ -10,147 +10,144 @@
           v-list-tile-action
             v-icon exit_to_app
           v-list-tile-content Logout
-    v-toolbar(scroll-off-screen fixed class="deep-purple darken-2" dark)#toolbar
-      v-toolbar-side-icon(@click.native.stop="sideNav = !sideNav" class="hidden-md-and-up")
-      v-toolbar-title#main-title 
+    v-toolbar(scroll-off-screen fixed dark class="deep-purple darken-2")
+      v-toolbar-side-icon(@click.native.stop="sideNav = !sideNav")
+      v-toolbar-title
         router-link(to="/" tag="span" style="cursor: pointer") MCM
-      v-spacer(class="hidden-xs-only")
-      v-text-field(@blur="searchInput = ''" flex color="pink lighten-1" width="30vw" prepend-icon="search" placeholder="Search styles" v-model="searchInput" class="search-field" @input="onSearch" single-line hide-details).ml-4.mr-2
-      v-card(dark v-if="onSearchResults")#card
+      v-text-field(@blur="searchInput = ''" flex color="pink lighten-1" width="30vw" prepend-icon="search" placeholder="Search styles" v-model="searchInput" @input="onSearch" single-line hide-details).ml-4.mr-2
+      v-card(dark v-if="searchResults" id="Card__Search")
         v-list
-          v-list-tile(@click="goToResult(result.id)" v-for="result in onSearchResults" :key="result.title")
+          v-list-tile(@click="goToResult(result.id)" v-for="result in searchResults" :key="result.title")
             v-list-tile-title(v-html="`${result.title}`") 
             v-list-tile-action(v-if="userIsAuthenticated && userFavorites.includes(result.id)") 
               v-icon favorite
-      v-toolbar-items
-        v-btn(flat router @click="reload").hidden-xs-only
-          v-icon(left).hidden-sm-and-down weekend
+      v-toolbar-items(class="hidden-xs-only")
+        v-btn(flat router @click="reloadProducts")
+          v-icon(left class="hidden-sm-only") weekend
           | Products
-        v-btn(flat @mouseenter="showFave = true" @mouseleave="showFave = false" @click="goToProfile" v-if="userIsAuthenticated")#profile-btn
+        v-btn(flat @mouseenter="showFave = true" @mouseleave="showFave = false" @click="goToProfile" v-if="userIsAuthenticated")
           v-badge(color="blue")
             span(slot="badge" v-if="badgeNumber") {{badgeNumber}}
-            v-icon(left) account_box
+            v-icon(left class="hidden-sm-only") account_box
             | Profile
         v-layout
           v-flex
-            v-card(v-if="showFave && userIsAuthenticated" @mouseover="showFave = true" @mouseleave="showFave = false")#profile-card
+            v-card(v-if="showFave && userIsAuthenticated" @mouseover="showFave = true" @mouseleave="showFave = false" id="Card__Favorites")
               v-list(three-line).mt-2
-                v-list-tile.ml-1.mb-3(v-if="showFave && userFavorites.includes(product.id)" v-for="product in allProducts" :key="product.title")
-                  v-list-tile-content(@click="goToResult(product.id)").imgContainer
-                    img(:src="product.imageUrl").faveImg
+                v-list-tile(v-if="showFave && userFavorites.includes(product.id)" v-for="product in allProducts" :key="product.title").ml-1.mb-3
+                  v-list-tile-content(@click="goToResult(product.id)" class="Card__Favorites--Image__Container")
+                    img(:src="product.imageUrl" class="Card__Favorites--Image")
         v-btn(flat v-if="userIsAuthenticated" @click="onLogout")
-          v-icon(left) exit_to_app
+          v-icon(left class="hidden-sm-only") exit_to_app
           | Logout
     main
       router-view
 </template>
 
 <script>
-  export default {
-    data () {
-      return {
-        sideNav: false,
-        searchInput: '',
-        showFave: false
-      }
-    },
-    computed: {
-      menuItems() {
-        let menuItems = [
-          { icon: 'weekend', title: 'Products', link: '/products' },
-          { icon: 'lock_open', title: 'Sign In', link: '/signin' },
-          { icon: 'create', title: 'Sign Up', link:  '/signup' }
-        ]
-        if (this.userIsAuthenticated) {
-          menuItems = [
-            { icon: 'weekend', title: 'Products', link: '/products' }
-          ]
-        }
-        if (this.userIsAuthenticated && this.userIsAdmin) {
-          menuItems = [
-            { icon: 'stars', title: 'Create Product', link: '/product/new'  }
-          ]
-        }
-        return menuItems
-      },
-      userIsAuthenticated() {
-        return this.$store.getters.user !== null && this.$store.getters.user !== undefined
-      },
-      userIsAdmin() {
-        return this.$store.getters.user.id === "XipYk5fNEUc1F0U5qppRHMjcTQx2"
-      },
-      badgeNumber() {
-        return this.$store.getters.user.favoritedProducts.length
-      },
-      onSearchResults() {
-        if (this.searchInput === '') {
-          return
-        } else if (!this.$store.getters.searchResults.length) {
-          return [{title: `No results for ${this.searchInput}`, description: ``}]
-        } else {
-          return this.$store.getters.searchResults.map(el => {
-            let regex = new RegExp(this.searchInput, 'gi');
-            let newTitle = el.title.replace(regex, `<span class="hl">${this.searchInput}</span>`);
-            let newDesc = el.description.replace(regex, `<span class="hl">${this.searchInput}</span>`);
-            return {
-              title: newTitle,
-              description: newDesc,
-              imageUrl: el.imageUrl,
-              id: el.id
-            }
-          }).slice(0, 5)
-        }
-      },
-      userFavorites() {
-        let faveCopy = [...this.$store.getters.user.favoritedProducts]
-        return faveCopy.slice(-5)
-      },
-      products() {
-        return this.$store.getters.loadedProducts
-      },
-      allProducts() {
-      return this.$store.getters.allProducts
-      }
-    },
-    methods: {
-      onLogout() {
-        this.$store.dispatch('logout')
-        this.$router.push('/')
-      },
-      goToProfile() {
-        this.$router.push('/profile')
-      },
-      onSearch() {
-        this.$store.dispatch('searchProduct', this.searchInput)
-      },
-      goToProduct(id) {
-        this.$router.push('/products/' + id)
-      },
-      async reload() {
-        await this.$store.dispatch('setResultsLog', false)
-        await this.$store.dispatch('removeProducts', [])
-        await this.$store.dispatch('loadProducts', 3);
-        await this.$router.push('/products')
-     },
-      async goToResult(id) {
-        await this.$store.dispatch('loadProduct', id)
-        setTimeout(() => this.$router.push('/products/' + id), 0)
-      },
-    },
-    created() {
-      this.$store.dispatch('loadProducts', 3)
+import { sanitize } from 'dompurify'
+
+export default {
+  data () {
+    return {
+      sideNav: false,
+      searchInput: '',
+      showFave: false
     }
+  },
+  computed: {
+    menuItems() {
+      let menuItems = [
+        { icon: 'weekend', title: 'Products', link: '/products' },
+        { icon: 'lock_open', title: 'Sign In', link: '/signin' },
+        { icon: 'create', title: 'Sign Up', link:  '/signup' }
+      ]
+      if (this.userIsAuthenticated) {
+        menuItems = [
+          { icon: 'weekend', title: 'Products', link: '/products' },
+          { icon: 'account_box', title: 'Profile', link: '/profile' }
+        ]
+      }
+      if (this.userIsAuthenticated && this.userIsAdmin) {
+        menuItems = [
+          { icon: 'stars', title: 'Create Product', link: '/product/new'  }
+        ]
+      }
+      return menuItems
+    },
+    userIsAuthenticated() {
+      return this.$store.getters.user !== null && this.$store.getters.user !== undefined
+    },
+    userIsAdmin() {
+      return this.$store.getters.user.id === "XipYk5fNEUc1F0U5qppRHMjcTQx2"
+    },
+    badgeNumber() {
+      return this.$store.getters.user.favoritedProducts.length
+    },
+    searchResults() {
+      if (!this.searchInput) {
+        return
+      } else if (!this.$store.getters.searchResults.length) {
+        return [{title: `No results for ${this.searchInput}`, description: ''}]
+      } else {
+        return this.$store.getters.searchResults.map(el => {
+          let regex = new RegExp(this.searchInput, 'gi');
+          let newTitle = el.title.replace(regex, sanitize(`<span class="SearchTerm__Highlight">${this.searchInput}</span>`));
+          let newDescription = el.description.replace(regex, sanitize(`<span class="SearchTerm__Highlight">${this.searchInput}</span>`));
+          return {
+            title: newTitle,
+            description: newDescription,
+            imageUrl: el.imageUrl,
+            id: el.id
+          }
+        }).slice(0, 5)
+      }
+    },
+    userFavorites() {
+      let faveCopy = [...this.$store.getters.user.favoritedProducts]
+      return faveCopy.slice(-5)
+    },
+    products() {
+      return this.$store.getters.loadedProducts
+    },
+    allProducts() {
+      return this.$store.getters.allProducts
+    }
+  },
+  methods: {
+    onLogout() {
+      this.$store.dispatch('logout')
+      this.$router.push('/')
+    },
+    goToProfile() {
+      this.$router.push('/profile')
+    },
+    onSearch() {
+      this.$store.dispatch('searchProduct', this.searchInput)
+    },
+    goToProduct(id) {
+      this.$router.push(`/products/${id}`)
+    },
+    async reloadProducts() {
+      await this.$store.dispatch('setResultsLog', false)
+      await this.$store.dispatch('removeProducts', [])
+      await this.$store.dispatch('loadProducts', 3);
+      await this.$router.push('/products')
+    },
+    async goToResult(id) {
+      await this.$store.dispatch('loadProduct', id)
+      setTimeout(() => this.$router.push(`/products/${id}`), 0)
+    },
+  },
+  created() {
+    this.$store.dispatch('loadProducts', 3)
   }
+}
 </script>
 
 <style>
-  #products {
-    z-index: 5;
-  }
-
-  #profile-card {
+  #Card__Favorites {
     position: absolute;
-    overflow: auto;
     transition: all 0.5s;
     width: 200px;
     z-index: 8;
@@ -158,45 +155,28 @@
     transform: translateX(-160px);
   }
 
-  #toolbar {
-    opacity: 0.92;
+  #Card__Search {
+    position: absolute;
+    transition: all 0.5s;
+    width: 100vw;
+    z-index: 8;
+    top: 100%;
+    left: 0%;
   }
 
-  #toolbar:hover {
-    opacity: 1;
-  }
-
-  .profile {
-    transform: translateX(-13px);
-  }
-
-  .hl {
+  .SearchTerm__Highlight {
     color:#ffc600;
   }
  
-  .imgContainer {
+  .Card__Favorites--Image__Container {
     display: flex;
     align-items: center;
     flex-direction: column;
     cursor: pointer;
   }
   
-  .faveImg {
-    max-width:100%;
-    max-height:100%; 
-  }
-
-  #main-title {
-    font-family: sans-serif;
-    font-weight: 100;
-  }
-
-  #card {
-    position: absolute;
-    overflow: hidden;
-    transition: all 0.5s;
-    width: 100%;
-    z-index: 8;
-    top: 100%;
+  .Card__Favorites--Image {
+    max-width: 100%;
+    max-height: 100%; 
   }
 </style>

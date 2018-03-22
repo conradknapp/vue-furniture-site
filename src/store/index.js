@@ -33,7 +33,6 @@ export const store = new Vuex.Store({
         return;
       }
       state.user.favoritedProducts.push(id);
-      console.log(state.user.favoritedProducts);
       state.user.fbKeys[id] = payload.fbKey;
     },
     unfavoriteProduct(state, payload) {
@@ -108,7 +107,6 @@ export const store = new Vuex.Store({
       state.allProductsFiltered = payload.map(x => {
         return hash[x];
       });
-      console.log("filtering...", state.allProductsFiltered);
     }
   },
   actions: {
@@ -146,7 +144,7 @@ export const store = new Vuex.Store({
       commit("setLoading", true);
       firebase
         .database()
-        .ref("/products/" + payload)
+        .ref(`/products/${payload}`)
         .once("value")
         .then(data => {
           const obj = data.val();
@@ -156,11 +154,9 @@ export const store = new Vuex.Store({
             getters.loadedProducts.findIndex(product => {
               return product.id === payload;
             }) !== -1;
-          console.log(productLoaded);
           if (!productLoaded) {
             getters.loadedProducts.push(product);
           }
-          console.log(getters.loadedProducts);
           commit("setLoading", false);
         })
         .catch(error => {
@@ -170,7 +166,7 @@ export const store = new Vuex.Store({
     },
     loadProducts({ commit }, payload = 3) {
       commit("setLoading", true);
-      let oldestKey = ``;
+      let oldestKey = "";
       firebase
         .database()
         .ref("products")
@@ -230,11 +226,6 @@ export const store = new Vuex.Store({
           let slice = products.reverse().slice(1);
           let arrayOfKeys = Object.keys(obj);
 
-          // if (arrayOfKeys.length === 1) {
-          //   commit('setLoading', false)
-          //   commit('setResultsLog', 'You have reached the end')
-          //   return
-          // }
           getters.lastKeys.push(arrayOfKeys[0]);
           getters.lastKeys.splice(-3, getters.lastKeys.length - 2);
           if (
@@ -281,7 +272,7 @@ export const store = new Vuex.Store({
       const user = getters.user;
       firebase
         .database()
-        .ref("/users/" + user.id)
+        .ref(`/users/${user.id}`)
         .child("/favorites/")
         .push(payload)
         .then(data => {
@@ -303,7 +294,7 @@ export const store = new Vuex.Store({
       const fbKey = user.fbKeys[payload];
       firebase
         .database()
-        .ref("/users/" + user.id + "/favorites/")
+        .ref(`/users/${user.id}/favorites/`)
         .child(fbKey)
         .remove()
         .then(data => {
@@ -421,7 +412,7 @@ export const store = new Vuex.Store({
       commit("setLoading", true);
       firebase
         .database()
-        .ref("/users/" + getters.user.id + "/favorites/")
+        .ref(`/users/${getters.user.id}/favorites/`)
         .once("value")
         .then(data => {
           const dataPairs = data.val();

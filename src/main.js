@@ -1,27 +1,27 @@
-import Vue from 'vue'
+import Vue from "vue";
 
-import Vuetify from 'vuetify'
-import 'vuetify/dist/vuetify.css'
+import Vuetify from "vuetify";
+import "vuetify/dist/vuetify.css";
 
-import App from './App'
-import router from './router'
-import {store} from './store'
-import * as firebase from 'firebase'
-import AlertCmp from './components/Shared/Alert.vue'
-import EditProductDetailsDialog from './components/Product/Edit/EditProductDetailsDialog'
-import HeartFlutter from './components/Shared/Heart.vue'
+import App from "./App";
+import router from "./router";
+import { store } from "./store";
+import * as firebase from "firebase";
+import AlertCmp from "./components/Shared/Alert.vue";
+import EditProductDetailsDialog from "./components/Product/Edit/EditProductDetailsDialog";
+import HeartFlutter from "./components/Shared/Heart.vue";
 
-Vue.use(Vuetify)
+Vue.use(Vuetify);
 
-Vue.component('app-alert', AlertCmp)
-Vue.component('app-edit-product-details-dialog', EditProductDetailsDialog)
-Vue.component('heart-flutter', HeartFlutter)
+Vue.component("app-alert", AlertCmp);
+Vue.component("app-edit-product-details-dialog", EditProductDetailsDialog);
+Vue.component("heart-flutter", HeartFlutter);
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 /* eslint-disable no-new */
 new Vue({
-  el: '#app',
+  el: "#app",
   router,
   store,
   render: h => h(App),
@@ -32,13 +32,13 @@ new Vue({
       databaseURL: "https://furniture-site-d9a32.firebaseio.com",
       projectId: "furniture-site-d9a32",
       storageBucket: "furniture-site-d9a32.appspot.com"
-    })
+    });
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        this.$store.dispatch('autoSignIn', user)
-        this.$store.dispatch('fetchUserData')
-        this.$store.dispatch('loadAllProducts')
+        this.$store.dispatch("autoSignIn", user);
+        this.$store.dispatch("fetchUserData");
+        this.$store.dispatch("loadAllProducts");
       }
-    })
+    });
   }
-})
+});

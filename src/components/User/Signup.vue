@@ -1,7 +1,7 @@
 <template lang="pug">
-  v-container(flexbox center)
+  v-container(flexbox center class="text-xs-center")
     v-layout(row wrap v-if="!error")
-      v-flex(xs12 sm6 offset-sm3).text-xs-center
+      v-flex(xs12 sm6 offset-sm3)
         h1 Get started here
     v-layout(row v-if="error")
       v-flex(xs12 sm6 offset-sm3)
@@ -21,10 +21,10 @@
                 v-layout(row)
                   v-flex(xs12)
                     v-text-field(name="confirmPassword" label="Confirm Password" id="confirmPassword" v-model="confirmPassword" type="password" prepend-icon="gavel" :rules="[comparePasswords]" required)
-                v-layout(row).text-xs-center
+                v-layout(row)
                   v-flex(xs12)
                     v-btn(color="blue" dark type="submit" :disabled='loading' :loading="loading") Sign Up
-                      span(slot="loader").custom-loader
+                      span(slot="loader" class="custom-loader")
                         v-icon(light) cached
                     h3 Already have an account? 
                       router-link(to="/signin") Sign in
@@ -44,7 +44,7 @@ export default {
       if (this.password !== this.confirmPassword) {
         return 'Passwords do not match'
       } else {
-        return ''
+        return false
       }
     },
     user() {

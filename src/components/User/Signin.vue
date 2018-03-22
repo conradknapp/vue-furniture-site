@@ -1,7 +1,7 @@
 <template lang="pug">
-  v-container(flexbox center)
+  v-container(flexbox center class="text-xs-center")
     v-layout(row wrap v-if="!error")
-      v-flex(xs12 sm6 offset-sm3).text-xs-center
+      v-flex(xs12 sm6 offset-sm3)
         h1 Welcome Back!
     v-layout(row v-if="error")
       v-flex(xs12 sm6 offset-sm3)
@@ -18,10 +18,10 @@
                 v-layout(row)
                   v-flex(xs12)
                     v-text-field(name="password" label="Password" id="password" v-model="password" prepend-icon="extension" type="password" required)
-                v-layout(row).text-xs-center
+                v-layout(row)
                   v-flex(xs12)
                     v-btn(type="submit" :disabled='loading' :loading="loading" color="orange") Sign in
-                      span(slot="loader").custom-loader
+                      span(slot="loader" class="custom-loader")
                         v-icon(light) cached
                     h3 Don't have an account? 
                       router-link(to="/signup") Sign up

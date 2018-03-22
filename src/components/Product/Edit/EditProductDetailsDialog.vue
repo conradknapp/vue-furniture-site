@@ -16,7 +16,7 @@
         v-layout(row wrap)
           v-flex(xs12)
             v-card-actions
-              v-btn(flat @click="editDialog = false").blue---text Close
+              v-btn(flat @click="editDialog = false").blue--text Close
               v-btn(flat @click="onSaveChanges").red--text Save
 </template>
 
