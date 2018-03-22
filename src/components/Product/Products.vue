@@ -18,7 +18,7 @@
               v-layout(fill-height)
                 v-flex(xs12 align-end flexbox)
                   span(v-text="product.title" class="Product__Title").headline
-                  span(v-if="product.description === description" v-text="getFirstSentence(description)" class="Product__Description")
+                  span(v-if="product.description === description" v-text="showFirstSentence(description)" class="Product__Description")
                   div
                     v-btn(icon x-large v-if="userIsAuthenticated" @mouseenter="mouseInHeart = true" @mouseleave="mouseInHeart = false" @click="toggleLike(product)")
                       v-icon(color="red darken-4" x-large v-if="userFavorites.includes(product.id)") favorite
@@ -29,9 +29,10 @@
       v-flex
         v-btn(color="grey darken-2" @click="backToTop" dark fixed bottom right fab)
           v-icon navigation
-    v-layout.pb-2
-      v-flex(xs12).text-xs-center
-        v-progress-circular(indeterminate color="orange darken-3" :width="7" :size="70" v-if="loading")
+    //- v-layout.pb-2
+    //-   v-flex(xs12).text-xs-center
+    //-     v-progress-circular(indeterminate color="orange darken-3" :width="7" :size="70" v-if="loading")
+    product-skeleton(v-show="loading")
     v-layout(v-if="!loading && resultsLog")
       v-flex(xs12).text-xs-center
         h1 You have reached the end
@@ -128,7 +129,7 @@ export default {
         this.$store.dispatch('favoriteProduct', product.id)
       }
     },
-    getFirstSentence(description) {
+    showFirstSentence(description) {
       return description.match(/^[^.]+/)[0]
     }
   }

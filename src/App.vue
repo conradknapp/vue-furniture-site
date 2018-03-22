@@ -10,7 +10,7 @@
           v-list-tile-action
             v-icon exit_to_app
           v-list-tile-content Logout
-    v-toolbar(scroll-off-screen fixed dark class="deep-purple darken-2")
+    v-toolbar(scroll-off-screen scroll-threshold="200" fixed dark class="deep-purple darken-2")
       v-toolbar-side-icon(@click.native.stop="sideNav = !sideNav")
       v-toolbar-title
         router-link(to="/" tag="span" style="cursor: pointer") MCM

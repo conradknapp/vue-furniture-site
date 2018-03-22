@@ -131,12 +131,6 @@ export default {
     z-index:99;
   }
 
-  /* #favorite-btn {
-    position: absolute;
-    top: 17px;
-    right: 10px;
-  } */
-
   @media screen and (min-width: 350px) {
     #media {
       height: 180px !important;
