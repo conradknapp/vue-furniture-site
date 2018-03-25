@@ -1,6 +1,6 @@
 <template lang="pug">
   v-container(grey lighten-2 grid-list-md).pt-5.mt-5
-    v-layout(row wrap v-if='!loading' class="hidden-xs-only")
+    v-layout(row wrap class="hidden-xs-only")
       v-flex(xs12)
         v-tooltip(bottom)
           span Row layout
@@ -11,7 +11,7 @@
           v-btn(icon slot="activator" @click="layoutButtonActive = true")
             v-icon(:color="layoutButtonActive ? 'purple darken-3' : ''") view_quilt
     v-layout(row wrap)
-      v-flex(xs12 v-bind="{ [`sm${layoutButtonActive ? product.flex : 6}`]: true }" v-for="product in products" :key="product.id" hover @mouseenter="showDescription(product)" @mouseleave="description = false")
+      v-flex(xs12 v-bind="{ [`sm${layoutButtonActive ? product.flex : 6}`]: true }" v-for="product in products" :key="product.id" hover @mouseenter="showDescription(product)" @mouseleave="description = null")
         v-card.mt-3.ml-1.mr-2(hover)
           v-card-media(lazy :src="product.imageUrl" :key="product.id" @click="goToProduct(product.id)" tag="button" height="40vh")
             v-container(fill-height fluid)
@@ -32,9 +32,9 @@
     //- v-layout.pb-2
     //-   v-flex(xs12).text-xs-center
     //-     v-progress-circular(indeterminate color="orange darken-3" :width="7" :size="70" v-if="loading")
-    product-skeleton(v-show="loading")
+    product-skeleton(v-show="loading && !bottom")
     v-layout(v-if="!loading && resultsLog")
-      v-flex(xs12).text-xs-center
+      v-flex(xs12 class="text-xs-center")
         h1 You have reached the end
           v-icon.ml-3(large right) sentiment_very_dissatisfied
 </template>
@@ -46,7 +46,7 @@ export default {
     return {
       layoutButtonActive: false,
       pageUpButtonVisible: false,
-      description: '',
+      description: null,
       mouseInHeart: false,
       unAuthFave: false,
       bottom: false
@@ -77,16 +77,17 @@ export default {
     }
   },
   watch: {
-    bottom(bottom) {
-      if (bottom && !this.resultsLog) {
-        const throttled = throttle(this.infiniteScroll, 1000)
-        throttled()
+    bottom(bottomOfPage) {
+      if (bottomOfPage && !this.resultsLog) {
+        const throttled = throttle(this.infiniteScroll, 1000);
+        throttled();
       }
     }
   },
   created() {
     window.addEventListener('scroll', () => {
-      window.scrollY > 150 ? this.pageUpButtonVisible = true : this.pageUpButtonVisible = false
+      window.scrollY > 150 ? 
+        this.pageUpButtonVisible = true : this.pageUpButtonVisible = false
     })
     window.addEventListener('scroll', () => {
       this.bottom = this.bottomVisible()
@@ -98,7 +99,7 @@ export default {
       this.$store.dispatch('infiniteScroll')
     },
     backToTop() {
-      window.scroll({top: 0, left: 0, behavior: 'smooth' })
+      window.scroll({ top: 0, left: 0, behavior: 'smooth' })
     },
     goToProduct(id) {
       if (!this.unAuthFave && !this.mouseInHeart) {
@@ -140,6 +141,8 @@ export default {
   .Product__Title {
     color: white;
     background: rgba(0,0,0,0.3);
+    font-weight: 400;
+    padding: 0.2em 0.4em;
   }
 
   .Product__Description {
@@ -153,10 +156,10 @@ export default {
     padding: 1em;
     text-align: center;
     pointer-events: none;
-    animation: showDescription 0.2s ease-in forwards;
+    animation: showDescription 0.1s ease-in-out forwards;
   }
 
-  .Product__Title:hover {
+  .Product__Description:hover {
     background-color: rgba(74, 20, 140, 0.4);
   }
 

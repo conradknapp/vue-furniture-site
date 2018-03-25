@@ -1,13 +1,13 @@
 <template lang="pug">
   v-container(flexbox center).mt-5.mb-5
     v-layout(row wrap v-if="loading")
-      v-flex(xs12).text-xs-center
+      v-flex(xs12 class="text-xs-center")
         v-progress-circular(indeterminate color="purple" :width="7" :size="70" v-if="loading")
-    v-layout(row wrap v-else)
+    v-layout(row wrap v-if="!loading")
       v-flex(xs12)
         v-card(hover)
           v-card-title
-            h1#title-product {{product.title}}
+            h1.Product__Title {{product.title}}
             v-spacer
             v-btn(icon dark color="indigo" @click="navBack")
               v-icon arrow_back
@@ -17,8 +17,8 @@
           v-tooltip(right)
             span Click to enlarge image
             v-card-media(slot="activator" @click="togglePictureDialog" :src="product.imageUrl" style='height: 200px; width: 100%; object-fit: contain')#media
-              heart-flutter(v-if="unAuthFave && !dontShow")#heart-flutter
-              heart-flutter(v-if="heartLoading && !dontShow")#heart-flutter
+              heart-flutter(v-if="unAuthFave && !isAnimating")#heart-flutter
+              heart-flutter(v-if="heartLoading && !isAnimating")#heart-flutter
               v-btn(icon x-large v-if="userIsAuthenticated && !userIsCreator" @mouseenter="mouseEnterHeart = true" @mouseleave="mouseEnterHeart = false" @click="onAgree")
                 v-icon(color="red darken-4" x-large v-if="onProductLiked") favorite
                 v-icon(color="white" x-large v-else) favorite
@@ -41,7 +41,7 @@ export default {
       dialog: false,
       unAuthFave: false,
       mouseEnterHeart: false,
-      dontShow: false
+      isAnimating: false
     }
   }, 
   computed: {
@@ -75,19 +75,19 @@ export default {
     onAgree() {
       if (this.onProductLiked) {
         if (window.scrollY > 25) {
-         this.dontShow = true 
+         this.isAnimating = true 
         }
         this.$store.dispatch('unfavoriteProduct', this.product.id)
       } else {
         if (window.scrollY > 25) {
-          this.dontShow = true
+          this.isAnimating = true
         }
         this.$store.dispatch('favoriteProduct', this.product.id)
       }
     },
     onUnAuthFave() {
       if (scrollY > 25) {
-       this.dontShow = true
+       this.isAnimating = true
        this.unAuthFave = true 
       }
       this.unAuthFave = true
@@ -107,22 +107,6 @@ export default {
 </script>
 
 <style scoped>
-  #title-product {
-    font-family: sans-serif;
-    font-weight: 100;
-    padding: 3px 10px;
-    position: relative;
-    display: inline-block;
-    color: white;
-    overflow: hidden;
-    background: rgba(0,0,0,0.3);
-  }
-
-  #title-product:hover {
-    background-color: rgba(74, 20, 140, 0.4);
-    transition-duration: 0.3s;
-  }
-
   #heart-flutter {
     transform: translateY(-100px);
     position: fixed;

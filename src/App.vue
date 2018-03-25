@@ -10,7 +10,7 @@
           v-list-tile-action
             v-icon exit_to_app
           v-list-tile-content Logout
-    v-toolbar(scroll-off-screen scroll-threshold="200" fixed dark class="deep-purple darken-2")
+    v-toolbar(scroll-off-screen :scroll-threshold="500" fixed dark class="deep-purple darken-2")
       v-toolbar-side-icon(@click.native.stop="sideNav = !sideNav")
       v-toolbar-title
         router-link(to="/" tag="span" style="cursor: pointer") MCM
@@ -26,7 +26,7 @@
           v-icon(left class="hidden-sm-only") weekend
           | Products
         v-btn(flat @mouseenter="showFave = true" @mouseleave="showFave = false" @click="goToProfile" v-if="userIsAuthenticated")
-          v-badge(color="blue")
+          v-badge(color="blue" :class="{ 'animate': isAnimated }")
             span(slot="badge" v-if="badgeNumber") {{badgeNumber}}
             v-icon(left class="hidden-sm-only") account_box
             | Profile
@@ -48,11 +48,13 @@
 import { sanitize } from 'dompurify'
 
 export default {
-  data () {
+  data() {
     return {
       sideNav: false,
       searchInput: '',
-      showFave: false
+      showFave: false,
+      isAnimated: false,
+      badge: null
     }
   },
   computed: {
@@ -79,10 +81,11 @@ export default {
       return this.$store.getters.user !== null && this.$store.getters.user !== undefined
     },
     userIsAdmin() {
-      return this.$store.getters.user.id === "XipYk5fNEUc1F0U5qppRHMjcTQx2"
+      return this.$store.getters.user.id === "EkW5ynXnGRUaUrxDZU2m67j5oj32"
     },
     badgeNumber() {
-      return this.$store.getters.user.favoritedProducts.length
+      this.badge = this.$store.getters.user.favoritedProducts.length 
+      return this.badge
     },
     searchResults() {
       if (!this.searchInput) {
@@ -112,6 +115,12 @@ export default {
     },
     allProducts() {
       return this.$store.getters.allProducts
+    }
+  },
+  watch: {
+    badge(favoritedProducts) {
+      this.isAnimated = true;
+      setTimeout(() => this.isAnimated = false, 1000)
     }
   },
   methods: {
@@ -179,4 +188,26 @@ export default {
     max-width: 100%;
     max-height: 100%; 
   }
+
+  .animate {
+    animation: bounce 1s both;
+  }
+
+  @keyframes bounce {
+  0%,100%,20%,53%,80% {
+    transform: translate3d(0,0,0)
+  }
+
+  40%,43% {
+    transform: translate3d(0,-20px,0)
+  }
+
+  70% {
+    transform: translate3d(0,-10px,0)
+  }
+
+  90% {
+    transform: translate3d(0,-4px,0)
+  }
+}
 </style>
