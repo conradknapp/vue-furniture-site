@@ -100,6 +100,9 @@ export default {
   created() {
     window.addEventListener('scroll', this.onFormSlide);
   },
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.onFormSlide);
+  },
   methods: {
     onLoadProduct(id) {
       this.$router.push(`/products/${id}`)

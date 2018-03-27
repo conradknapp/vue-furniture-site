@@ -8,12 +8,9 @@
         v-card(hover)
           v-card-title
             h1(class="Product__Title") {{product.title}}
-            //- v-spacer
-            //- v-btn(icon dark color="indigo" @click="navBack")
-            //-   v-icon arrow_back
-            template(v-if='userIsCreator')
-              v-spacer
-              app-edit-product-details-dialog(:product="product")
+            v-spacer
+            v-btn(dark color="purple darken-4" @click="navBack")
+              v-icon arrow_back
           v-tooltip(right)
             span Click to enlarge image
             v-card-media(slot="activator" @click="togglePictureDialog" :src="product.imageUrl" style='height: 200px; width: 100%; object-fit: contain')#media
@@ -70,6 +67,9 @@ export default {
     allProducts() {
       return this.$store.getters.allProducts
     }
+  },
+  created() {
+    this.$store.dispatch('loadProduct', this.id)
   },
   methods: {
     onAgree() {

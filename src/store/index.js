@@ -166,7 +166,7 @@ export const store = new Vuex.Store({
     },
     loadProducts({ commit }, payload = 4) {
       commit("setLoading", true);
-      let oldestKey = "";
+      let oldestKey;
       firebase
         .database()
         .ref("products")
