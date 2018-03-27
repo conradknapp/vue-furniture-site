@@ -164,7 +164,7 @@ export const store = new Vuex.Store({
           console.log(error);
         });
     },
-    loadProducts({ commit }, payload = 3) {
+    loadProducts({ commit }, payload = 4) {
       commit("setLoading", true);
       let oldestKey = "";
       firebase
@@ -206,7 +206,7 @@ export const store = new Vuex.Store({
         .ref("products")
         .orderByKey()
         .endAt(getters.oldestKey)
-        .limitToLast(4)
+        .limitToLast(5)
         .once("value")
         .then(data => {
           const products = [];

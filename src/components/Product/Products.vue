@@ -76,7 +76,7 @@ export default {
   watch: {
     bottom(bottomOfPage) {
       if (bottomOfPage && !this.resultsLog) {
-        const throttled = throttle(this.infiniteScroll, 1000);
+        const throttled = throttle(this.infiniteScroll, 500);
         throttled();
       }
     }

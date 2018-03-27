@@ -5,13 +5,13 @@ v-container(fluid grid-list-md class="text-xs-center")
       app-alert(v-if="!isSignUpAlert" @dismissed="onDismissed" :icon="error.icon" :color="error.color" :submessage="error.submessage" :text="error.message" class="Alert")
   v-layout(row wrap v-if="!loading")
     v-flex(xs12)
-      v-btn(large dark @click="reload" class="darken-4 purple" id="Products__Button") Explore Products
+      v-btn(large dark @click="onReloadProducts" class="darken-4 purple" id="Products__Button") Explore Products
   v-layout
     v-flex(xs12)
       v-progress-circular(indeterminate color="purple" :width="7" :size="70" v-if="loading")
   v-layout(row wrap v-if="!loading")
     v-flex(xs12)
-      v-carousel(v-bind="{ 'cycle': cycleCarousel }" interval="3000" style="cursor: pointer; animation-play-state: paused;" delimiter-icon="home" id="Carousel" hide-controls lazy)
+      v-carousel(v-bind="{ 'cycle': cycleCarousel }" interval="3000" style="cursor: pointer; animation-play-state: paused;" delimiter-icon="home" id="Carousel" lazy)
         v-carousel-item(@mouseover="toggleCarousel" @mouseout="toggleCarousel" v-for="product in products" :src="product.imageUrl" :key="product.id" @click="onLoadProduct(product.id)")
           h1(class="Carousel__Title") {{product.title}}
       #Info__Card(v-if="!userIsAuthenticated")
@@ -21,7 +21,7 @@ v-container(fluid grid-list-md class="text-xs-center")
               span(style="font-weight: bold;") Love
               |  Your Home
             h2 Find the best curated furniture and home accessories here
-      v-container(v-if="!userIsAuthenticated")
+      v-container(class="slide-in")(v-if="!userIsAuthenticated")
         v-layout(row wrap v-if="!error")
           v-flex(xs12 sm6 offset-sm3)
             h1 Let's Get Started
@@ -97,6 +97,9 @@ export default {
       }
     }
   },
+  created() {
+    window.addEventListener('scroll', this.onFormSlide);
+  },
   methods: {
     onLoadProduct(id) {
       this.$router.push(`/products/${id}`)
@@ -110,10 +113,22 @@ export default {
     onSignup() {
       this.$store.dispatch('signUserUp', {email: this.email, password: this.password})
     },
-    async reload() {
+    async onReloadProducts() {
       await this.$store.dispatch('removeProducts', [])
-      await this.$store.dispatch('loadProducts', 3);
+      await this.$store.dispatch('loadProducts', 5);
       await this.$router.push('/products')
+    },
+    onFormSlide() {
+      const slidingForm = document.querySelector(".slide-in");
+      const slideInAt = (scrollY + innerHeight) - (slidingForm.offsetHeight / 2);
+      const formBottom = slidingForm.offsetTop + slidingForm.offsetHeight + 1000;
+      const half = slideInAt > slidingForm.offsetTop;
+      const notScrolledPast = window.scrollY < formBottom ;
+      if (half && notScrolledPast) {
+        slidingForm.classList.add('active');
+      } else {
+        slidingForm.classList.remove('active');
+      }
      }
   },
   beforeMount() {
@@ -165,6 +180,17 @@ h1 {
 
 #Info__Card:hover {
   background-size: 500%;
+}
+
+.slide-in {
+  opacity: 0;
+  transform: translateX(-20%) scale(1);
+  transition: all 2s;
+}
+
+.active {
+  opacity: 1;
+  transform: translateX(0%) scale(1);
 }
 
 @media screen and (max-width: 500px) {
