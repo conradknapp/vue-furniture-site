@@ -22,9 +22,9 @@
                   div
                     v-btn(icon x-large v-if="userIsAuthenticated" @mouseenter="mouseInHeart = true" @mouseleave="mouseInHeart = false" @click="toggleLike(product)")
                       v-icon(color="red darken-4" x-large v-if="userFavorites.includes(product.id)") favorite
-                      v-icon(color="white" x-large v-else) favorite
+                      v-icon(color="grey" x-large v-else) favorite
                     v-btn(icon x-large v-if="!userIsAuthenticated" @click="onUnAuthFave")
-                      v-icon(color="grey" x-large) favorite
+                      v-icon(color="red darken-4" x-large) favorite
     v-layout(v-if="pageUpButtonVisible")
       v-flex
         v-btn(color="grey darken-2" @click="backToTop" dark fixed bottom right fab)

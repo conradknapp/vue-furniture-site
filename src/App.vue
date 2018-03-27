@@ -80,9 +80,6 @@ export default {
     userIsAuthenticated() {
       return this.$store.getters.user !== null && this.$store.getters.user !== undefined
     },
-    userIsAdmin() {
-      return this.$store.getters.user.id === "EkW5ynXnGRUaUrxDZU2m67j5oj32"
-    },
     badgeNumber() {
       this.badge = this.$store.getters.user.favoritedProducts.length 
       return this.badge
