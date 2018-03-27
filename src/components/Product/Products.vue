@@ -24,17 +24,14 @@
                       v-icon(color="red darken-4" x-large v-if="userFavorites.includes(product.id)") favorite
                       v-icon(color="white" x-large v-else) favorite
                     v-btn(icon x-large v-if="!userIsAuthenticated" @click="onUnAuthFave")
-                      v-icon(color="white" x-large) favorite
+                      v-icon(color="grey" x-large) favorite
     v-layout(v-if="pageUpButtonVisible")
       v-flex
         v-btn(color="grey darken-2" @click="backToTop" dark fixed bottom right fab)
           v-icon navigation
-    //- v-layout.pb-2
-    //-   v-flex(xs12).text-xs-center
-    //-     v-progress-circular(indeterminate color="orange darken-3" :width="7" :size="70" v-if="loading")
     product-skeleton(v-show="loading && !bottom")
     v-layout(v-if="!loading && resultsLog")
-      v-flex(xs12 class="text-xs-center")
+      v-flex(xs12 class="text-xs-center mt-5 mb-5")
         h1 You have reached the end
           v-icon.ml-3(large right) sentiment_very_dissatisfied
 </template>
@@ -142,7 +139,11 @@ export default {
     color: white;
     background: rgba(0,0,0,0.3);
     font-weight: 400;
-    padding: 0.2em 0.4em;
+    padding: 0.1em;
+  }
+
+  .Product__Title:hover {
+    background: rgba(87, 6, 104, 0.3);
   }
 
   .Product__Description {

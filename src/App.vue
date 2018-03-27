@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-app(class="orange")
+  v-app(class="grey lighten-2")
     v-navigation-drawer(app temporary fixed v-model="sideNav")
       v-list
         v-list-tile(v-for="item in menuItems" :key="item.title" :to="item.link")

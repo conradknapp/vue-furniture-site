@@ -7,10 +7,10 @@
       v-flex(xs12)
         v-card(hover)
           v-card-title
-            h1.Product__Title {{product.title}}
-            v-spacer
-            v-btn(icon dark color="indigo" @click="navBack")
-              v-icon arrow_back
+            h1(class="Product__Title") {{product.title}}
+            //- v-spacer
+            //- v-btn(icon dark color="indigo" @click="navBack")
+            //-   v-icon arrow_back
             template(v-if='userIsCreator')
               v-spacer
               app-edit-product-details-dialog(:product="product")
@@ -21,9 +21,9 @@
               heart-flutter(v-if="heartLoading && !isAnimating")#heart-flutter
               v-btn(icon x-large v-if="userIsAuthenticated && !userIsCreator" @mouseenter="mouseEnterHeart = true" @mouseleave="mouseEnterHeart = false" @click="onAgree")
                 v-icon(color="red darken-4" x-large v-if="onProductLiked") favorite
-                v-icon(color="white" x-large v-else) favorite
+                v-icon(color="grey" x-large v-else) favorite
               v-btn(icon x-large v-if="!userIsAuthenticated" @click="onUnAuthFave")
-                v-icon(x-large color="white") favorite
+                v-icon(x-large color="grey") favorite
           v-dialog(v-model="dialog")
             v-card
               v-card-media(:src="product.imageUrl" height="500px")
@@ -112,7 +112,7 @@ export default {
     position: fixed;
     width: 100%;
     height: 100%;
-    z-index:99;
+    z-index: 99;
   }
 
   @media screen and (min-width: 350px) {
@@ -129,6 +129,7 @@ export default {
 
   @media screen and (min-width: 550px) {
     #media {
+      font-size: 2rem;
       height: 300px !important;
     }
   }

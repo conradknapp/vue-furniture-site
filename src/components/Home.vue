@@ -3,18 +3,25 @@ v-container(fluid grid-list-md class="text-xs-center")
   v-layout(row wrap v-if="error && !loading")
     v-flex(xs12)
       app-alert(v-if="!isSignUpAlert" @dismissed="onDismissed" :icon="error.icon" :color="error.color" :submessage="error.submessage" :text="error.message" class="Alert")
-  v-layout(row wrap v-if="!loading" class="mt-5")
+  v-layout(row wrap v-if="!loading")
     v-flex(xs12)
-      v-btn(large dark transition @click="reload" class="darken-4 purple") See All Products
+      v-btn(large dark @click="reload" class="darken-4 purple" id="Products__Button") Explore Products
   v-layout
     v-flex(xs12)
       v-progress-circular(indeterminate color="purple" :width="7" :size="70" v-if="loading")
   v-layout(row wrap v-if="!loading")
     v-flex(xs12)
-      v-carousel(v-bind="{ 'cycle': cycleCarousel }" interval="3000" style="cursor: pointer; animation-play-state: paused;" delimiter-icon="home" hide-controls lazy)
+      v-carousel(v-bind="{ 'cycle': cycleCarousel }" interval="3000" style="cursor: pointer; animation-play-state: paused;" delimiter-icon="home" id="Carousel" hide-controls lazy)
         v-carousel-item(@mouseover="toggleCarousel" @mouseout="toggleCarousel" v-for="product in products" :src="product.imageUrl" :key="product.id" @click="onLoadProduct(product.id)")
           h1(class="Carousel__Title") {{product.title}}
-      v-container
+      #Info__Card(v-if="!userIsAuthenticated")
+        v-layout(row wrap)
+          v-flex(xs12)
+            h1
+              span(style="font-weight: bold;") Love
+              |  Your Home
+            h2 Find the best curated furniture and home accessories here
+      v-container(v-if="!userIsAuthenticated")
         v-layout(row wrap v-if="!error")
           v-flex(xs12 sm6 offset-sm3)
             h1 Let's Get Started
@@ -24,7 +31,7 @@ v-container(fluid grid-list-md class="text-xs-center")
             app-alert(@dismissed="onDismissed" :icon="error.icon" :color="error.color" :submessage="error.submessage" :text="error.message")
         v-layout(row wrap)
           v-flex(xs12 sm6 offset-sm3)
-            v-card(color="purple darken-4" dark)
+            v-card(color="purple darken-4" class="mt-4 mb-5" dark)
               v-card-text
                 v-container
                   form(@submit.prevent="onSignup" @input="signUpInput = true")
@@ -40,7 +47,7 @@ v-container(fluid grid-list-md class="text-xs-center")
                         v-text-field(name="confirmPassword" label="Confirm Password" id="confirmPassword" v-model="confirmPassword" type="password" prepend-icon="gavel" :rules="[comparePasswords]" required)
                     v-layout(row)
                       v-flex(xs12)
-                        v-btn(color="pink" dark type="submit" :disabled='loading' :loading="loading") Submit
+                        v-btn(color="pink darken-2" dark type="submit" :disabled='loading' :loading="loading") Let's Go!
                           span(slot="loader" class="custom-loader")
                             v-icon(light) cached
 </template>
@@ -121,6 +128,10 @@ export default {
   margin-bottom: -2em;
 }
 
+#Products__Button {
+  margin: 5em 0 2em 0;
+}
+
 .Carousel__Title {
   position: absolute;
   background-color: rgba(0,0,0,0.5);
@@ -135,5 +146,33 @@ export default {
 
 .Carousel__Title:hover {
   color: orchid;
+}
+
+h1 {
+  font-weight: 100;
+  font-size: 2.5rem;
+}
+
+#Info__Card {
+  color: white;
+  margin: 5em 0 3em 0; 
+  padding: 3em;
+  background-color: purple;
+  background-image: repeating-linear-gradient(45deg,transparent,transparent 35px,rgba(255,255,255,.25) 35px,rgba(255,255,255,.25) 70px);
+  background-size: 100%;
+  transition: 5000ms;
+}
+
+#Info__Card:hover {
+  background-size: 500%;
+}
+
+@media screen and (max-width: 500px) {
+  #Carousel {
+    height: 60vh;
+  }
+  h1 {
+    font-size: 1.7rem;
+  }
 }
 </style>
